@@ -10,8 +10,7 @@ public class MotoController : ControllerBase
     private static List<Moto> motos = new();
     private static List<Chaveiro> chaveiros = new();
     private static List<Patio> patios = new();
-
-    // Bloco de inicialização de exemplo
+    
     static MotoController()
     {
         var chaveiroTeste = new Chaveiro { Id = 1, Dispositivo = "Chave123" };
@@ -29,7 +28,7 @@ public class MotoController : ControllerBase
     [HttpGet]
     public ActionResult<List<Moto>> GetAll()
     {
-        return Ok(motos); // 200 OK
+        return Ok(motos); 
     }
 
     [HttpGet("{id}")]
@@ -37,9 +36,9 @@ public class MotoController : ControllerBase
     {
         var moto = motos.FirstOrDefault(m => m.Id == id);
         if (moto == null)
-            return NotFound(); // 404 Not Found
+            return NotFound(); 
 
-        return Ok(moto); // 200 OK
+        return Ok(moto); 
     }
 
     [HttpPost]
@@ -70,15 +69,15 @@ public class MotoController : ControllerBase
     {
         var moto = motos.FirstOrDefault(m => m.Id == id);
         if (moto == null)
-            return NotFound(); // 404 Not Found
+            return NotFound(); 
 
         if (motoAtualizada == null)
-            return BadRequest(); // 400 Bad Request
+            return BadRequest(); 
 
         moto.Placa = motoAtualizada.Placa;
         moto.Cor = motoAtualizada.Cor;
 
-        return NoContent(); // 204 No Content
+        return NoContent(); 
     }
 
     [HttpDelete("{id}")]
@@ -86,9 +85,9 @@ public class MotoController : ControllerBase
     {
         var moto = motos.FirstOrDefault(m => m.Id == id);
         if (moto == null)
-            return NotFound(); // 404 Not Found
+            return NotFound(); 
 
         motos.Remove(moto);
-        return NoContent(); // 204 No Content
+        return NoContent(); 
     }
 }
