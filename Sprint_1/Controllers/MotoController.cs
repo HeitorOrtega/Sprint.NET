@@ -10,7 +10,7 @@ public class MotoController : ControllerBase
     private static List<Moto> motos = new();
     private static List<Chaveiro> chaveiros = new();
     private static List<Patio> patios = new();
-    
+
     static MotoController()
     {
         var chaveiroTeste = new Chaveiro { Id = 1, Dispositivo = "Chave123" };
@@ -26,8 +26,14 @@ public class MotoController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<Moto>> GetAll()
+    public ActionResult<List<Moto>> GetAll([FromQuery] string? cor = null)
     {
+        if (!string.IsNullOrEmpty(cor))
+        {
+            var filtradas = motos.Where(m => m.Cor.Equals(cor, StringComparison.OrdinalIgnoreCase)).ToList();
+            return Ok(filtradas);
+        }
+
         return Ok(motos); 
     }
 
@@ -65,7 +71,7 @@ public class MotoController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] Moto motoAtualizada)
+    public IActionResult Update(int id, [FromBody] MotoUpdateDTO motoAtualizada)
     {
         var moto = motos.FirstOrDefault(m => m.Id == id);
         if (moto == null)
@@ -79,6 +85,7 @@ public class MotoController : ControllerBase
 
         return NoContent(); 
     }
+
 
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)

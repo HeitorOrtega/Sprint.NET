@@ -11,8 +11,17 @@ public class PatioController : ControllerBase
     private static List<Moto> motos = new();
 
     [HttpGet]
-    public ActionResult<List<Patio>> GetAll()
+    public ActionResult<List<Patio>> GetAll([FromQuery] long? funcionarioId = null)
     {
+        if (funcionarioId.HasValue)
+        {
+            var filtrados = patios
+                .Where(p => p.Funcionarios.Any(f => f.Id == funcionarioId.Value))
+                .ToList();
+
+            return Ok(filtrados);
+        }
+
         return Ok(patios);
     }
 
@@ -45,7 +54,25 @@ public class PatioController : ControllerBase
 
         patios.Add(novoPatio);
         return CreatedAtAction(nameof(GetById), new { id = novoPatio.Id }, novoPatio);
-    }dd
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Update(long id, [FromBody] PatioDTO patioDto)
+    {
+        var patio = patios.FirstOrDefault(p => p.Id == id);
+        if (patio == null)
+            return NotFound();
+
+        patio.Funcionarios = funcionarios
+            .Where(f => patioDto.FuncionariosIds.Contains(f.Id))
+            .ToList();
+
+        patio.Motos = motos
+            .Where(m => patioDto.MotosIds.Contains(m.Id))
+            .ToList();
+
+        return NoContent();
+    }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(long id)
