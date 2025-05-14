@@ -51,7 +51,7 @@ Essa API fornece endpoints RESTful para cadastrar, editar, excluir e listar **Mo
 ### Pré-requisitos:
 - .NET SDK 9 ou superior
 - Oracle SQL Developer
-- Visual Studio ou Rider
+- Preferencia Rider
 
 ### Passos:
 
