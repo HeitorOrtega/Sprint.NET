@@ -1,100 +1,100 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Sprint_1.Data;
 using Sprint_1.DTO;
 using Sprint_1.Models;
 
-
-[ApiController]
-[Route("api/[controller]")]
-public class MotoController : ControllerBase
+namespace Sprint_1.Controllers
 {
-    private static List<Moto> motos = new();
-    private static List<Chaveiro> chaveiros = new();
-    private static List<Patio> patios = new();
-
-    static MotoController()
+    [ApiController]
+    [Route("api/[controller]")]
+    public class MotoController : ControllerBase
     {
-        var chaveiroTeste = new Chaveiro { Id = 1, Dispositivo = "Chave123" };
-        chaveiros.Add(chaveiroTeste);
+        private readonly AppDbContext _context;
 
-        var patioTeste = new Patio
+        public MotoController(AppDbContext context)
         {
-            Id = 1,
-            Funcionarios = new List<Funcionario>(),
-            Motos = new List<Moto>()
-        };
-        patios.Add(patioTeste);
-    }
-
-    [HttpGet]
-    public ActionResult<List<Moto>> GetAll([FromQuery] string? cor = null)
-    {
-        if (!string.IsNullOrEmpty(cor))
-        {
-            var filtradas = motos.Where(m => m.Cor.Equals(cor, StringComparison.OrdinalIgnoreCase)).ToList();
-            return Ok(filtradas);
+            _context = context;
         }
 
-        return Ok(motos); 
-    }
-
-    [HttpGet("{id}")]
-    public ActionResult<Moto> GetById(int id)
-    {
-        var moto = motos.FirstOrDefault(m => m.Id == id);
-        if (moto == null)
-            return NotFound(); 
-
-        return Ok(moto); 
-    }
-
-    [HttpPost]
-    public ActionResult<Moto> Create([FromBody] MotoDTO motoDto)
-    {
-        var chaveiro = chaveiros.FirstOrDefault(c => c.Id == motoDto.ChaveiroId);
-        var patiosSelecionados = patios.Where(p => motoDto.PatioIds.Contains(p.Id)).ToList();
-
-        if (chaveiro == null || patiosSelecionados.Count == 0)
-            return BadRequest("Chaveiro ou Pátios inválidos.");
-
-        var novaMoto = new Moto
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Moto>>> GetAll([FromQuery] string? cor = null)
         {
-            Id = motos.Count + 1,
-            Cor = motoDto.Cor,
-            Placa = motoDto.Placa,
-            DataFabricacao = motoDto.DataFabricacao,
-            Chaveiro = chaveiro,
-            Patios = patiosSelecionados
-        };
+            var query = _context.Motos.Include(m => m.Chaveiro).Include(m => m.Patios).AsQueryable();
 
-        motos.Add(novaMoto);
-        return CreatedAtAction(nameof(GetById), new { id = novaMoto.Id }, novaMoto);
-    }
+            if (!string.IsNullOrEmpty(cor))
+            {
+                query = query.Where(m => m.Cor.ToLower() == cor.ToLower());
+            }
 
-    [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] MotoUpdateDTO motoAtualizada)
-    {
-        var moto = motos.FirstOrDefault(m => m.Id == id);
-        if (moto == null)
-            return NotFound(); 
+            return Ok(await query.ToListAsync());
+        }
 
-        if (motoAtualizada == null)
-            return BadRequest(); 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Moto>> GetById(long id)
+        {
+            var moto = await _context.Motos
+                .Include(m => m.Chaveiro)
+                .Include(m => m.Patios)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
-        moto.Placa = motoAtualizada.Placa;
-        moto.Cor = motoAtualizada.Cor;
+            if (moto == null)
+                return NotFound();
 
-        return NoContent(); 
-    }
+            return Ok(moto);
+        }
 
+        [HttpPost]
+        public async Task<ActionResult<Moto>> Create([FromBody] MotoDTO motoDto)
+        {
+            var chaveiro = await _context.Set<Chaveiro>().FindAsync(motoDto.ChaveiroId);
+            var patios = await _context.Set<Patio>().Where(p => motoDto.PatioIds.Contains(p.Id)).ToListAsync();
 
-    [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
-    {
-        var moto = motos.FirstOrDefault(m => m.Id == id);
-        if (moto == null)
-            return NotFound(); 
+            if (chaveiro == null || patios.Count == 0)
+                return BadRequest("Chaveiro ou Pátios inválidos.");
 
-        motos.Remove(moto);
-        return NoContent(); 
+            var novaMoto = new Moto
+            {
+                Cor = motoDto.Cor,
+                Placa = motoDto.Placa,
+                DataFabricacao = motoDto.DataFabricacao,
+                Chaveiro = chaveiro,
+                Patios = patios
+            };
+
+            _context.Motos.Add(novaMoto);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetById), new { id = novaMoto.Id }, novaMoto);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(long id, [FromBody] MotoUpdateDTO motoAtualizada)
+        {
+            var moto = await _context.Motos.FindAsync(id);
+            if (moto == null)
+                return NotFound();
+
+            moto.Placa = motoAtualizada.Placa;
+            moto.Cor = motoAtualizada.Cor;
+
+            _context.Motos.Update(moto);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(long id)
+        {
+            var moto = await _context.Motos.FindAsync(id);
+            if (moto == null)
+                return NotFound();
+
+            _context.Motos.Remove(moto);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }

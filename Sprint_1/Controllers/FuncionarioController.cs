@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Sprint_1.Data;
 using Sprint_1.DTOs;
 using Sprint_1.Models;
 
@@ -8,29 +10,36 @@ namespace Sprint_1.Controllers
     [Route("api/[controller]")]
     public class FuncionarioController : ControllerBase
     {
-        private static List<Funcionario> funcionarios = new();
-        private static long nextId = 1;
+        private readonly AppDbContext _context;
+
+        public FuncionarioController(AppDbContext context)
+        {
+            _context = context;
+        }
 
         [HttpGet]
-        public ActionResult<IEnumerable<FuncionarioDTO>> GetTodos()
+        public async Task<ActionResult<IEnumerable<FuncionarioDTO>>> GetTodos()
         {
-            var lista = funcionarios.Select(f => new FuncionarioDTO
-            {
-                Id = f.Id,
-                Nome = f.Nome,
-                Cpf = f.Cpf,
-                Email = f.Email,
-                Rg = f.Rg,
-                Telefone = f.Telefone
-            });
+            var lista = await _context.Funcionarios
+                .Select(f => new FuncionarioDTO
+                {
+                    Id = f.Id,
+                    Nome = f.Nome,
+                    Cpf = f.Cpf,
+                    Email = f.Email,
+                    Rg = f.Rg,
+                    Telefone = f.Telefone
+                })
+                .ToListAsync();
 
             return Ok(lista);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<FuncionarioDTO> GetPorId(long id)
+        public async Task<ActionResult<FuncionarioDTO>> GetPorId(long id)
         {
-            var funcionario = funcionarios.FirstOrDefault(f => f.Id == id);
+            var funcionario = await _context.Funcionarios.FindAsync(id);
+
             if (funcionario == null)
                 return NotFound();
 
@@ -46,9 +55,9 @@ namespace Sprint_1.Controllers
         }
 
         [HttpGet("buscarPorNome")]
-        public ActionResult<IEnumerable<FuncionarioDTO>> BuscarPorNome([FromQuery] string nome)
+        public async Task<ActionResult<IEnumerable<FuncionarioDTO>>> BuscarPorNome([FromQuery] string nome)
         {
-            var lista = funcionarios
+            var lista = await _context.Funcionarios
                 .Where(f => f.Nome.ToLower().Contains(nome.ToLower()))
                 .Select(f => new FuncionarioDTO
                 {
@@ -58,20 +67,20 @@ namespace Sprint_1.Controllers
                     Email = f.Email,
                     Rg = f.Rg,
                     Telefone = f.Telefone
-                });
+                })
+                .ToListAsync();
 
             return Ok(lista);
         }
 
         [HttpPost]
-        public ActionResult<FuncionarioDTO> Criar(FuncionarioCreateDTO dto)
+        public async Task<ActionResult<FuncionarioDTO>> Criar(FuncionarioCreateDTO dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Nome) || string.IsNullOrWhiteSpace(dto.Cpf))
                 return BadRequest("Nome e CPF são obrigatórios.");
 
             var funcionario = new Funcionario
             {
-                Id = nextId++,
                 Nome = dto.Nome,
                 Cpf = dto.Cpf,
                 Email = dto.Email,
@@ -80,15 +89,16 @@ namespace Sprint_1.Controllers
                 Patios = new List<Patio>()
             };
 
-            funcionarios.Add(funcionario);
+            _context.Funcionarios.Add(funcionario);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetPorId), new { id = funcionario.Id }, funcionario);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Atualizar(long id, FuncionarioUpdateDTO dto)
+        public async Task<IActionResult> Atualizar(long id, FuncionarioUpdateDTO dto)
         {
-            var funcionario = funcionarios.FirstOrDefault(f => f.Id == id);
+            var funcionario = await _context.Funcionarios.FindAsync(id);
             if (funcionario == null)
                 return NotFound();
 
@@ -98,17 +108,19 @@ namespace Sprint_1.Controllers
             funcionario.Rg = dto.Rg;
             funcionario.Telefone = dto.Telefone;
 
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Deletar(long id)
+        public async Task<IActionResult> Deletar(long id)
         {
-            var funcionario = funcionarios.FirstOrDefault(f => f.Id == id);
+            var funcionario = await _context.Funcionarios.FindAsync(id);
             if (funcionario == null)
                 return NotFound();
 
-            funcionarios.Remove(funcionario);
+            _context.Funcionarios.Remove(funcionario);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
     }

@@ -4,5 +4,7 @@ public class Chaveiro
 {
     public long Id { get; set; }
     public string Dispositivo { get; set; }
+    public long MotoId { get; set; }
+
     public Moto Moto { get; set; }
 }
