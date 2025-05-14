@@ -1,10 +1,19 @@
-﻿namespace Sprint_1.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public class Chaveiro
+namespace Sprint_1.Models
 {
-    public long Id { get; set; }
-    public string Dispositivo { get; set; }
-    public long MotoId { get; set; }
+    [Table("CHAVEIRO")]
+    public class Chaveiro
+    {
+        [Key]
+        public long Id { get; set; }
 
-    public Moto Moto { get; set; }
+        public string Dispositivo { get; set; }
+
+        [ForeignKey("Moto")]
+        public long MotoId { get; set; }
+
+        public Moto Moto { get; set; }
+    }
 }

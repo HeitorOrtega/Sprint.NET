@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sprint_1.Models;
 
+
 namespace Sprint_1.Data
 {
     public class AppDbContext : DbContext

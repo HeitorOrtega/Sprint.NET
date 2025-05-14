@@ -24,7 +24,7 @@ namespace Sprint_1.Models
         [Column("TELEFONE")]
         public string Telefone { get; set; }
 
-        [NotMapped]
-        public List<Patio> Patios { get; set; }
+        public long? PatioId { get; set; }
+        public Patio Patio { get; set; }
     }
 }

@@ -28,7 +28,8 @@ namespace Sprint_1.Controllers
                     Cpf = f.Cpf,
                     Email = f.Email,
                     Rg = f.Rg,
-                    Telefone = f.Telefone
+                    Telefone = f.Telefone,
+                    PatioId = f.PatioId
                 })
                 .ToListAsync();
 
@@ -50,7 +51,8 @@ namespace Sprint_1.Controllers
                 Cpf = funcionario.Cpf,
                 Email = funcionario.Email,
                 Rg = funcionario.Rg,
-                Telefone = funcionario.Telefone
+                Telefone = funcionario.Telefone,
+                PatioId = funcionario.PatioId
             });
         }
 
@@ -66,7 +68,8 @@ namespace Sprint_1.Controllers
                     Cpf = f.Cpf,
                     Email = f.Email,
                     Rg = f.Rg,
-                    Telefone = f.Telefone
+                    Telefone = f.Telefone,
+                    PatioId = f.PatioId
                 })
                 .ToListAsync();
 
@@ -86,13 +89,24 @@ namespace Sprint_1.Controllers
                 Email = dto.Email,
                 Rg = dto.Rg,
                 Telefone = dto.Telefone,
-                Patios = new List<Patio>()
+                PatioId = dto.PatioId
             };
 
             _context.Funcionarios.Add(funcionario);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetPorId), new { id = funcionario.Id }, funcionario);
+            var retorno = new FuncionarioDTO
+            {
+                Id = funcionario.Id,
+                Nome = funcionario.Nome,
+                Cpf = funcionario.Cpf,
+                Email = funcionario.Email,
+                Rg = funcionario.Rg,
+                Telefone = funcionario.Telefone,
+                PatioId = funcionario.PatioId
+            };
+
+            return CreatedAtAction(nameof(GetPorId), new { id = funcionario.Id }, retorno);
         }
 
         [HttpPut("{id}")]
@@ -107,6 +121,7 @@ namespace Sprint_1.Controllers
             funcionario.Email = dto.Email;
             funcionario.Rg = dto.Rg;
             funcionario.Telefone = dto.Telefone;
+            funcionario.PatioId = dto.PatioId;
 
             await _context.SaveChangesAsync();
             return NoContent();

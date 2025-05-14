@@ -27,15 +27,15 @@ namespace Sprint_1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Patios",
+                name: "PATIO",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "NUMBER(19)", nullable: false)
+                    ID = table.Column<long>(type: "NUMBER(19)", nullable: false)
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Patios", x => x.Id);
+                    table.PrimaryKey("PK_PATIO", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -44,8 +44,8 @@ namespace Sprint_1.Migrations
                 {
                     Id = table.Column<long>(type: "NUMBER(19)", nullable: false)
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
-                    MotoId = table.Column<long>(type: "NUMBER(19)", nullable: false),
-                    Dispositivo = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false)
+                    Dispositivo = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    MotoId = table.Column<long>(type: "NUMBER(19)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -75,10 +75,10 @@ namespace Sprint_1.Migrations
                 {
                     table.PrimaryKey("PK_FUNCIONARIO", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FUNCIONARIO_Patios_PatioId",
+                        name: "FK_FUNCIONARIO_PATIO_PatioId",
                         column: x => x.PatioId,
-                        principalTable: "Patios",
-                        principalColumn: "Id");
+                        principalTable: "PATIO",
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -98,10 +98,10 @@ namespace Sprint_1.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MotoPatio_Patios_PatiosId",
+                        name: "FK_MotoPatio_PATIO_PatiosId",
                         column: x => x.PatiosId,
-                        principalTable: "Patios",
-                        principalColumn: "Id",
+                        principalTable: "PATIO",
+                        principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -138,7 +138,7 @@ namespace Sprint_1.Migrations
                 name: "Motos");
 
             migrationBuilder.DropTable(
-                name: "Patios");
+                name: "PATIO");
         }
     }
 }

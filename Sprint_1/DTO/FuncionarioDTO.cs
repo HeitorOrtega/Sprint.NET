@@ -8,6 +8,8 @@
         public string Email { get; set; }
         public string Rg { get; set; }
         public string Telefone { get; set; }
+
+        public long? PatioId { get; set; } 
     }
 
     public class FuncionarioCreateDTO
@@ -17,6 +19,8 @@
         public string Email { get; set; }
         public string Rg { get; set; }
         public string Telefone { get; set; }
+
+        public long? PatioId { get; set; } 
     }
 
     public class FuncionarioUpdateDTO
@@ -26,5 +30,7 @@
         public string Email { get; set; }
         public string Rg { get; set; }
         public string Telefone { get; set; }
+
+        public long? PatioId { get; set; } 
     }
 }

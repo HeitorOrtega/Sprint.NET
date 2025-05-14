@@ -5,13 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
+using Sprint_1.Data;
 
 #nullable disable
 
 namespace Sprint_1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250513223734_Inicial")]
+    [Migration("20250514204331_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -133,13 +134,14 @@ namespace Sprint_1.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(19)");
+                        .HasColumnType("NUMBER(19)")
+                        .HasColumnName("ID");
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.HasKey("Id");
 
-                    b.ToTable("Patios");
+                    b.ToTable("PATIO");
                 });
 
             modelBuilder.Entity("MotoPatio", b =>

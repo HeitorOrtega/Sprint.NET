@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sprint_1.Models
 {
@@ -18,7 +17,7 @@ namespace Sprint_1.Models
 
         public DateTime DataFabricacao { get; set; }
 
-        public List<Patio> Patios { get; set; }
+        public List<Patio> Patios { get; set; } = new();
 
         public Chaveiro Chaveiro { get; set; }
     }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Sprint_1.Data; 
+using Sprint_1.Data;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
