@@ -1,106 +1,82 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Sprint_1.DTO;
+using Sprint_1.Data;
+using Sprint_1.DTOs;
 using Sprint_1.Models;
-using Sprint_1.Data; 
 
-[ApiController]
-[Route("api/[controller]")]
-public class PatioController : ControllerBase
+namespace Sprint_1.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public PatioController(AppDbContext context)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class PatioController : ControllerBase
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    [HttpGet]
-    public async Task<ActionResult<List<Patio>>> GetAll([FromQuery] long? funcionarioId = null)
-    {
-        var query = _context.Patios
-            .Include(p => p.Funcionarios)
-            .Include(p => p.Motos)
-            .AsQueryable();
-
-        if (funcionarioId.HasValue)
+        public PatioController(AppDbContext context)
         {
-            query = query.Where(p => p.Funcionarios.Any(f => f.Id == funcionarioId.Value));
+            _context = context;
         }
 
-        return await query.ToListAsync();
-    }
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Patio>> GetById(long id)
-    {
-        var patio = await _context.Patios
-            .Include(p => p.Funcionarios)
-            .Include(p => p.Motos)
-            .FirstOrDefaultAsync(p => p.Id == id);
-
-        if (patio == null)
-            return NotFound();
-
-        return patio;
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<Patio>> Create([FromBody] PatioDTO patioDto)
-    {
-        var funcionarios = await _context.Funcionarios
-            .Where(f => patioDto.FuncionariosIds.Contains(f.Id))
-            .ToListAsync();
-
-        var motos = await _context.Motos
-            .Where(m => patioDto.MotosIds.Contains(m.Id))
-            .ToListAsync();
-
-        var novoPatio = new Patio
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PatioDTO>>> GetTodos()
         {
-            Funcionarios = funcionarios,
-            Motos = motos
-        };
+            var patios = await _context.Patios
+                .Select(p => new PatioDTO
+                {
+                    Id = p.Id,
+                    Localizacao = "Localização padrão" // Placeholder, ajustar conforme o modelo
+                })
+                .ToListAsync();
 
-        _context.Patios.Add(novoPatio);
-        await _context.SaveChangesAsync();
+            return Ok(patios);
+        }
 
-        return CreatedAtAction(nameof(GetById), new { id = novoPatio.Id }, novoPatio);
-    }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PatioDTO>> GetPorId(long id)
+        {
+            var patio = await _context.Patios.FindAsync(id);
+            if (patio == null)
+                return NotFound();
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(long id, [FromBody] PatioDTO patioDto)
-    {
-        var patio = await _context.Patios
-            .Include(p => p.Funcionarios)
-            .Include(p => p.Motos)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            return Ok(new PatioDTO
+            {
+                Id = patio.Id,
+                Localizacao = "Localização padrão" // Ajustar se for necessário
+            });
+        }
 
-        if (patio == null)
-            return NotFound();
+        [HttpPost]
+        public async Task<ActionResult<PatioDTO>> Criar(PatioCreateDTO dto)
+        {
+            var novoPatio = new Patio();
 
-        patio.Funcionarios = await _context.Funcionarios
-            .Where(f => patioDto.FuncionariosIds.Contains(f.Id))
-            .ToListAsync();
+            _context.Patios.Add(novoPatio);
+            await _context.SaveChangesAsync();
 
-        patio.Motos = await _context.Motos
-            .Where(m => patioDto.MotosIds.Contains(m.Id))
-            .ToListAsync();
+            return CreatedAtAction(nameof(GetPorId), new { id = novoPatio.Id }, novoPatio);
+        }
 
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Atualizar(long id, PatioUpdateDTO dto)
+        {
+            var patio = await _context.Patios.FindAsync(id);
+            if (patio == null)
+                return NotFound();
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(long id)
-    {
-        var patio = await _context.Patios.FindAsync(id);
-        if (patio == null)
-            return NotFound();
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
 
-        _context.Patios.Remove(patio);
-        await _context.SaveChangesAsync();
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Deletar(long id)
+        {
+            var patio = await _context.Patios.FindAsync(id);
+            if (patio == null)
+                return NotFound();
 
-        return NoContent();
+            _context.Patios.Remove(patio);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }

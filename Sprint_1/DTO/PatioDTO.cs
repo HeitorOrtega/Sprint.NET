@@ -1,8 +1,18 @@
-﻿namespace Sprint_1.DTO
+﻿namespace Sprint_1.DTOs
 {
     public class PatioDTO
     {
-        public List<long> FuncionariosIds { get; set; }
-        public List<long> MotosIds { get; set; }
+        public long Id { get; set; }
+        public string Localizacao { get; set; }
+    }
+
+    public class PatioCreateDTO
+    {
+        public string Localizacao { get; set; }
+    }
+
+    public class PatioUpdateDTO
+    {
+        public string Localizacao { get; set; }
     }
 }
