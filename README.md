@@ -1,7 +1,7 @@
-# SmartConnectCar API
+# Sprint 1 .NET
 
 API desenvolvida em ASP.NET Core para gerenciamento de motocicletas e seus proprietários.  
-Parte do projeto acadêmico da startup SmartConnectCar 🚀.
+Parte do projeto acadêmico para a Mottu
 
 ---
 
