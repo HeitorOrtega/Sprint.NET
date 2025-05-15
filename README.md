@@ -1,13 +1,19 @@
-# Sprint 1 .NET
+# Sprint 1 - .NET API
 
-API desenvolvida em ASP.NET Core para gerenciamento de motocicletas e seus proprietários.  
-Parte do projeto acadêmico para a Mottu
+API desenvolvida em ASP.NET Core para gerenciamento de motocicletas, funcionários e pátios.  
+Parte do projeto acadêmico para a **SmartConnectCar (Mottu)**.
 
 ---
 
 ## 📌 Descrição do Projeto
 
-Essa API fornece endpoints RESTful para cadastrar, editar, excluir e listar **Motos** , **Pátios** **Funcinarios**, permitindo que a aplicação gerencie com facilidade os dados necessários ao funcionamento do sistema de atendimento automotivo SmartConnectCar.
+Esta API fornece endpoints RESTful para **cadastrar, consultar, atualizar e excluir** informações sobre:
+
+- 🏍️ Motos  
+- 👷 Funcionários  
+- 🏢 Pátios  
+
+Ela é parte do sistema de atendimento automotivo **SmartConnectCar**, promovendo uma solução eficiente para gestão de oficinas e veículos.
 
 ---
 
@@ -23,59 +29,62 @@ Essa API fornece endpoints RESTful para cadastrar, editar, excluir e listar **Mo
 | PUT    | /api/Motos/{id}  | Atualiza os dados de uma moto      |
 | DELETE | /api/Motos/{id}  | Remove uma moto do sistema         |
 
-### 📍 Funcionarios
+### 📍 Funcionários
 
-| Método | Rota                   | Descrição                            |
-|--------|------------------------|--------------------------------------|
-| GET    | /api/funcionario    | Lista todos os proprietários            |
-| GET    | /api/funcionario/{id}| Retorna um funcionario específico      |
-| GET    |/api/funcionario/{buscaPorNome}| Retorna um funcionario        |
-| POST   | /api/funcionario     | Cadastra um novo funcionario           |
-| PUT    | /api/funcionario/{id}| Atualiza os dados de um funcionario    |
-| DELETE | /api/funcionario/{id}| Remove um funcionario do sistema       |
-
+| Método | Rota                                 | Descrição                            |
+|--------|--------------------------------------|--------------------------------------|
+| GET    | /api/Funcionario                     | Lista todos os funcionários          |
+| GET    | /api/Funcionario/{id}                | Retorna um funcionário específico    |
+| GET    | /api/Funcionario/busca?nome={nome}   | Busca um funcionário por nome        |
+| POST   | /api/Funcionario                     | Cadastra um novo funcionário         |
+| PUT    | /api/Funcionario/{id}                | Atualiza os dados de um funcionário  |
+| DELETE | /api/Funcionario/{id}                | Remove um funcionário do sistema     |
 
 ### 📍 Pátio
 
-| Método | Rota                   | Descrição                            |
-|--------|------------------------|--------------------------------------|
-| GET    | /api/patio     | Lista todos os pátios                        |
-| GET    | /api/patio/{id}| Retorna um pátio específico                  |
-| POST   | /api/patio     | Cadastra um novo pátio                       |
-| PUT    | /api/patio/{id}| Atualiza os dados de um pátio                |
-| DELETE | /api/patio/{id}| Remove um pátio do sistema                   |
+| Método | Rota             | Descrição                            |
+|--------|------------------|----------------------------------------|
+| GET    | /api/Patio       | Lista todos os pátios                  |
+| GET    | /api/Patio/{id}  | Retorna um pátio específico            |
+| POST   | /api/Patio       | Cadastra um novo pátio                 |
+| PUT    | /api/Patio/{id}  | Atualiza os dados de um pátio          |
+| DELETE | /api/Patio/{id}  | Remove um pátio do sistema             |
+
 ---
 
 ## ⚙️ Instalação e Execução
 
-### Pré-requisitos:
-- .NET SDK 9 ou superior
-- Oracle SQL Developer
-- Preferencia Rider
+### ✅ Pré-requisitos
 
-### Passos:
+- [.NET SDK 9.0 ou superior](https://dotnet.microsoft.com/en-us/download)
+- [Oracle SQL Developer](https://www.oracle.com/database/sqldeveloper/)
+- [Oracle Data Access Components (ODAC)](https://www.oracle.com/database/technologies/dotnet-odacdeploy-downloads.html)
+- [Oracle Instant Client](https://www.oracle.com/database/technologies/instant-client/downloads.html)
+- Rider ou Visual Studio (ou outro editor compatível com .NET)
 
-1. Clone o repositório:
-bash
-git clone https://github.com/seu-usuario/](https://github.com/HeitorOrtega/Sprint1.NET.git
+---
 
-2.
-cd Sprint_1
+### 🚀 Passos para Executar
 
-3.
+
+# 1. Clone o repositório
+git clone https://github.com/HeitorOrtega/Sprint1.NET.git
+
+# 2. Acesse a pasta do projeto
+cd Sprint1.NET
+
+# 3. Restaure os pacotes e atualize o banco
 dotnet restore
 dotnet ef database update
 
-4.
-Execute a API
+# 4. Execute a API
+dotnet run
 
-5. Acesse o Swagger
+# Acesso ao Swagger 
 http://localhost:5051/swagger
 
 
 📫 Contato
 Desenvolvido por Heitor Ortega Silva
-Curso: Análise e Desenvolvimento de Sistemas - FIAP
-
-
+📚 Curso: Análise e Desenvolvimento de Sistemas – FIAP
 
