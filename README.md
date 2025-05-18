@@ -22,33 +22,33 @@ Ela é parte do sistema de atendimento automotivo **SmartConnectCar**, promovend
 ### 📍 Motos
 
 | Método | Rota             | Descrição                          |
-|--------|------------------|------------------------------------|
-| GET    | /api/Motos       | Lista todas as motos               |
-| GET    | /api/Motos/{id}  | Retorna uma moto específica        |
-| POST   | /api/Motos       | Cadastra uma nova moto             |
-| PUT    | /api/Motos/{id}  | Atualiza os dados de uma moto      |
-| DELETE | /api/Motos/{id}  | Remove uma moto do sistema         |
+|--------|------------------|----------------------------------- |
+| GET    | /v1/motos       | Lista todas as motos                |
+| GET    | /v1/motos/{id}  | Retorna uma moto específica         |
+| POST   | /v1/motos       | Cadastra uma nova moto              |
+| PUT    | /v1/motos/{id}  | Atualiza os dados de uma moto       |
+| DELETE | /v1/motos/{id}  | Remove uma moto do sistema          |
 
 ### 📍 Funcionários
 
 | Método | Rota                                 | Descrição                            |
 |--------|--------------------------------------|--------------------------------------|
-| GET    | /api/Funcionario                     | Lista todos os funcionários          |
-| GET    | /api/Funcionario/{id}                | Retorna um funcionário específico    |
-| GET    | /api/Funcionario/busca?nome={nome}   | Busca um funcionário por nome        |
-| POST   | /api/Funcionario                     | Cadastra um novo funcionário         |
-| PUT    | /api/Funcionario/{id}                | Atualiza os dados de um funcionário  |
-| DELETE | /api/Funcionario/{id}                | Remove um funcionário do sistema     |
+| GET    | /v1/funcionarios                    | Lista todos os funcionários           |
+| GET    | /v1/funcionarios/{id}                | Retorna um funcionário específico    |
+| GET    | /v1/funcionarios/busca?nome={nome}   | Busca um funcionário por nome        |
+| POST   | /v1/funcionarios                     | Cadastra um novo funcionário         |
+| PUT    | /v1/funcionarios/{id}                | Atualiza os dados de um funcionário  |
+| DELETE | /v1/funcionarios/{id}                | Remove um funcionário do sistema     |
 
 ### 📍 Pátio
 
-| Método | Rota             | Descrição                            |
+| Método | Rota             | Descrição                              |
 |--------|------------------|----------------------------------------|
-| GET    | /api/Patio       | Lista todos os pátios                  |
-| GET    | /api/Patio/{id}  | Retorna um pátio específico            |
-| POST   | /api/Patio       | Cadastra um novo pátio                 |
-| PUT    | /api/Patio/{id}  | Atualiza os dados de um pátio          |
-| DELETE | /api/Patio/{id}  | Remove um pátio do sistema             |
+| GET    | /v1/patios       | Lista todos os pátios                  |
+| GET    | /v1/patios/{id}  | Retorna um pátio específico            |
+| POST   | /v1/patios       | Cadastra um novo pátio                 |
+| PUT    | /v1/patios/{id}  | Atualiza os dados de um pátio          |
+| DELETE | /v1/patios/{id}  | Remove um pátio do sistema             |
 
 ---
 
