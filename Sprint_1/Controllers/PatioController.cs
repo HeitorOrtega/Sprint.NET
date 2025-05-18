@@ -7,7 +7,7 @@ using Sprint_1.Models;
 namespace Sprint_1.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/patios")]
     public class PatioController : ControllerBase
     {
         private readonly AppDbContext _context;
