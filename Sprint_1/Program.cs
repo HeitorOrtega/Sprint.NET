@@ -9,7 +9,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseOracle("User Id=rm557825;Password=fiap25;Data Source=oracle.fiap.com.br:1521/ORCL;"));
+    options.UseOracle(Environment.GetEnvironmentVariable("ORACLE_CONNECTION")));
 
 var app = builder.Build();
 
