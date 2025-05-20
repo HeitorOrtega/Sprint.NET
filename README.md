@@ -1,7 +1,7 @@
 # Sprint 1 - .NET API
 
 API desenvolvida em ASP.NET Core para gerenciamento de motocicletas, funcionários e pátios.  
-Parte do projeto acadêmico para a **SmartConnectCar (Mottu)**.
+Parte do projeto acadêmico para a **(Mottu)**.
 
 ---
 
@@ -13,7 +13,7 @@ Esta API fornece endpoints RESTful para **cadastrar, consultar, atualizar e excl
 - 👷 Funcionários  
 - 🏢 Pátios  
 
-Ela é parte do sistema de atendimento automotivo **SmartConnectCar**, promovendo uma solução eficiente para gestão de oficinas e veículos.
+Ela é parte do sistema de atendimento automotivo **Mottu**, promovendo uma solução eficiente para gestão de oficinas e veículos.
 
 ---
 
