@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Sprint_1.Data;
-
+using Oracle.EntityFrameworkCore;
+using System; 
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

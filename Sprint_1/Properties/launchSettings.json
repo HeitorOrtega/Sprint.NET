@@ -8,8 +8,7 @@
       "applicationUrl": "http://localhost:5051",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ORACLE_CONNECTION" : "User Id=rm557825;Password=fiap25;Data Source=oracle.fiap.com.br:1521/ORCL;"
-        
+        "ORACLE_CONNECTION": "User Id=rm557825;Password=fiap25;Data Source=oracle.fiap.com.br:1521/ORCL;" 
       }
     },
     "https": {
@@ -18,7 +17,8 @@
       "launchBrowser": false,
       "applicationUrl": "https://localhost:7020;http://localhost:5051",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ORACLE_CONNECTION": "User Id=rm557825;Password=fiap25;Data Source=oracle.fiap.com.br:1521/ORCL;" 
       }
     }
   }

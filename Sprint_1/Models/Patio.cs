@@ -11,6 +11,10 @@ namespace Sprint_1.Models
         [Column("ID")]
         public long Id { get; set; }
 
+        [Column("LOCALIZACAO")] 
+        [Required(ErrorMessage = "A localização é obrigatória.")]
+        public string Localizacao { get; set; }
+
         public List<Funcionario> Funcionarios { get; set; } = new();
         public List<Moto> Motos { get; set; } = new();
     }

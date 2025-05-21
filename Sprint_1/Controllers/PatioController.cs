@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Sprint_1.Data;
 using Sprint_1.DTOs;
 using Sprint_1.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sprint_1.Controllers
 {
@@ -24,7 +27,7 @@ namespace Sprint_1.Controllers
                 .Select(p => new PatioDTO
                 {
                     Id = p.Id,
-                    Localizacao = "Localização padrão" // Placeholder, ajustar conforme o modelo
+                    Localizacao = p.Localizacao
                 })
                 .ToListAsync();
 
@@ -41,28 +44,40 @@ namespace Sprint_1.Controllers
             return Ok(new PatioDTO
             {
                 Id = patio.Id,
-                Localizacao = "Localização padrão" // Ajustar se for necessário
+                Localizacao = patio.Localizacao
             });
         }
 
         [HttpPost]
-        public async Task<ActionResult<PatioDTO>> Criar(PatioCreateDTO dto)
+        public async Task<ActionResult<PatioDTO>> Criar([FromBody] PatioCreateDTO dto)
         {
-            var novoPatio = new Patio();
+            var novoPatio = new Patio
+            {
+                Localizacao = dto.Localizacao
+            };
 
             _context.Patios.Add(novoPatio);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetPorId), new { id = novoPatio.Id }, novoPatio);
+            var patioCriadoDTO = new PatioDTO
+            {
+                Id = novoPatio.Id,
+                Localizacao = novoPatio.Localizacao
+            };
+
+            return CreatedAtAction(nameof(GetPorId), new { id = novoPatio.Id }, patioCriadoDTO);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Atualizar(long id, PatioUpdateDTO dto)
+        public async Task<IActionResult> Atualizar(long id, [FromBody] PatioUpdateDTO dto)
         {
             var patio = await _context.Patios.FindAsync(id);
             if (patio == null)
                 return NotFound();
 
+            patio.Localizacao = dto.Localizacao;
+
+            _context.Patios.Update(patio);
             await _context.SaveChangesAsync();
             return NoContent();
         }
