@@ -3,9 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Sprint_1.Data;
 using Sprint_1.DTOs;
 using Sprint_1.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace Sprint_1.Controllers
 {
