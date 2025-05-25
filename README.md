@@ -110,4 +110,9 @@ Desenvolvido por Heitor Ortega Silva
 🎓 Curso: Análise e Desenvolvimento de Sistemas – FIAP
 📧 Email: heitor.ortega16@gmail.com
 
+Participantes:
+
+Marcos Lourenço - 556496
+Pedro Saraiva - 555160
+
 
