@@ -9,7 +9,7 @@ namespace Sprint_1.DTOs
         public string Modelo { get; set; }
         
         [Required]
-        public int? Ano { get; set; }
+        public int Ano { get; set; }
         public string Placa { get; set; }
     }
 
@@ -19,7 +19,7 @@ namespace Sprint_1.DTOs
         public string Modelo { get; set; }
         
         [Required]
-        public int? Ano { get; set; }
+        public int Ano { get; set; }
         public string Placa { get; set; }
     }
 
@@ -29,7 +29,7 @@ namespace Sprint_1.DTOs
         public string Modelo { get; set; }
     
         [Required]
-        public int? Ano { get; set; }
+        public int Ano { get; set; }
         public string Placa { get; set; }
     }
 }
