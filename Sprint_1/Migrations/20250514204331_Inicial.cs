@@ -8,7 +8,6 @@ namespace Sprint_1.Migrations
     /// <inheritdoc />
     public partial class Inicial : Migration
     {
-        // 🔹 Constantes para evitar repetição
         private const string TipoNumber = "NUMBER(19)";
         private const string TipoTexto = "NVARCHAR2(2000)";
         private const string TipoData = "TIMESTAMP(7)";
@@ -19,7 +18,7 @@ namespace Sprint_1.Migrations
         private const string TabelaMotos = "Motos";
         private const string TabelaPatio = "PATIO";
         private const string TabelaChaveiro = "Chaveiro";
-        private const string TabelaChaveiroUpper = "CHAVEIRO"; // caso você precise no plural/upper
+        private const string TabelaChaveiroUpper = "CHAVEIRO";
 
         private const string TabelaFuncionario = "FUNCIONARIO";
         private const string TabelaMotoPatio = "MotoPatio";
@@ -65,9 +64,9 @@ namespace Sprint_1.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Chaveiro", x => x.Id);
+                    table.PrimaryKey($"PK_{TabelaChaveiro}", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Chaveiro_Motos_MotoId",
+                        name: $"FK_{TabelaChaveiro}_{TabelaMotos}_MotoId",
                         column: x => x.MotoId,
                         principalTable: TabelaMotos,
                         principalColumn: "Id",
@@ -91,7 +90,7 @@ namespace Sprint_1.Migrations
                 {
                     table.PrimaryKey("PK_FUNCIONARIO", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FUNCIONARIO_PATIO_PatioId",
+                        name: $"FK_{TabelaFuncionario}_{TabelaPatio}_PatioId",
                         column: x => x.PatioId,
                         principalTable: TabelaPatio,
                         principalColumn: "ID");
@@ -108,13 +107,13 @@ namespace Sprint_1.Migrations
                 {
                     table.PrimaryKey("PK_MotoPatio", x => new { x.MotosId, x.PatiosId });
                     table.ForeignKey(
-                        name: "FK_MotoPatio_Motos_MotosId",
+                        name: $"FK_{TabelaMotoPatio}_{TabelaMotos}_MotosId",
                         column: x => x.MotosId,
                         principalTable: TabelaMotos,
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MotoPatio_PATIO_PatiosId",
+                        name: $"FK_{TabelaMotoPatio}_{TabelaPatio}_PatiosId",
                         column: x => x.PatiosId,
                         principalTable: TabelaPatio,
                         principalColumn: "ID",
@@ -122,7 +121,7 @@ namespace Sprint_1.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chaveiro_MotoId",
+                name: $"IX_{TabelaChaveiro}_MotoId",
                 table: TabelaChaveiro,
                 column: "MotoId",
                 unique: true);
