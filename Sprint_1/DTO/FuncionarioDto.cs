@@ -12,7 +12,7 @@
         public long? PatioId { get; set; } 
     }
 
-    public class FuncionarioCreateDTO
+    public class FuncionarioCreateDto
     {
         public string Nome { get; set; }
         public string Cpf { get; set; }
@@ -23,7 +23,7 @@
         public long? PatioId { get; set; } 
     }
 
-    public class FuncionarioUpdateDTO
+    public class FuncionarioUpdateDto
     {
         public string Nome { get; set; }
         public string Cpf { get; set; }

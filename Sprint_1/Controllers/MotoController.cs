@@ -52,7 +52,7 @@ namespace Sprint_1.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<MotoDto>> Criar(MotoCreateDTO dto)
+        public async Task<ActionResult<MotoDto>> Criar(MotoCreateDto dto)
         {
             var novaMoto = new Moto
             {
@@ -68,7 +68,7 @@ namespace Sprint_1.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Atualizar(long id, MotoUpdateDTO dto)
+        public async Task<IActionResult> Atualizar(long id, MotoUpdateDto dto)
         {
             var moto = await _context.Motos.FindAsync(id);
             if (moto == null)

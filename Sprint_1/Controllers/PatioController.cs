@@ -47,7 +47,7 @@ namespace Sprint_1.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PatioDto>> Criar([FromBody] PatioCreateDTO dto)
+        public async Task<ActionResult<PatioDto>> Criar([FromBody] PatioCreateDto dto)
         {
             var novoPatio = new Patio
             {
@@ -67,7 +67,7 @@ namespace Sprint_1.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Atualizar(long id, [FromBody] PatioUpdateDTO dto)
+        public async Task<IActionResult> Atualizar(long id, [FromBody] PatioUpdateDto dto)
         {
             var patio = await _context.Patios.FindAsync(id);
             if (patio == null)

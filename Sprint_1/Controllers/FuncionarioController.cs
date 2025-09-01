@@ -77,7 +77,7 @@ namespace Sprint_1.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<FuncionarioDto>> Criar(FuncionarioCreateDTO dto)
+        public async Task<ActionResult<FuncionarioDto>> Criar(FuncionarioCreateDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Nome) || string.IsNullOrWhiteSpace(dto.Cpf))
                 return BadRequest("Nome e CPF são obrigatórios.");
@@ -110,7 +110,7 @@ namespace Sprint_1.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Atualizar(long id, FuncionarioUpdateDTO dto)
+        public async Task<IActionResult> Atualizar(long id, FuncionarioUpdateDto dto)
         {
             var funcionario = await _context.Funcionarios.FindAsync(id);
             if (funcionario == null)
