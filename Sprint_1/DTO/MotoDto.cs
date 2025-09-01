@@ -17,6 +17,8 @@ namespace Sprint_1.DTOs
     {
         public string Marca { get; set; }
         public string Modelo { get; set; }
+        
+        [Required]
         public int Ano { get; set; }
         public string Placa { get; set; }
     }
@@ -25,6 +27,7 @@ namespace Sprint_1.DTOs
     {
         public string Marca { get; set; }
         public string Modelo { get; set; }
+        [Required]
         public int Ano { get; set; }
         public string Placa { get; set; }
     }

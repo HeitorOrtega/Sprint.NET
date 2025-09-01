@@ -8,18 +8,34 @@ namespace Sprint_1.Migrations
     /// <inheritdoc />
     public partial class Inicial : Migration
     {
+        // 🔹 Constantes para evitar repetição
+        private const string TipoNumber = "NUMBER(19)";
+        private const string TipoTexto = "NVARCHAR2(2000)";
+        private const string TipoData = "TIMESTAMP(7)";
+
+        private const string OracleIdentity = "Oracle:Identity";
+        private const string OracleIdentityConfig = "START WITH 1 INCREMENT BY 1";
+
+        private const string TabelaMotos = "Motos";
+        private const string TabelaPatio = "PATIO";
+        private const string TabelaChaveiro = "Chaveiro";
+        private const string TabelaChaveiroUpper = "CHAVEIRO"; // caso você precise no plural/upper
+
+        private const string TabelaFuncionario = "FUNCIONARIO";
+        private const string TabelaMotoPatio = "MotoPatio";
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Motos",
+                name: TabelaMotos,
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "NUMBER(19)", nullable: false)
-                        .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
-                    Cor = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    Placa = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    DataFabricacao = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false)
+                    Id = table.Column<long>(type: TipoNumber, nullable: false)
+                        .Annotation(OracleIdentity, OracleIdentityConfig),
+                    Cor = table.Column<string>(type: TipoTexto, nullable: false),
+                    Placa = table.Column<string>(type: TipoTexto, nullable: false),
+                    DataFabricacao = table.Column<DateTime>(type: TipoData, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -27,11 +43,11 @@ namespace Sprint_1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PATIO",
+                name: TabelaPatio,
                 columns: table => new
                 {
-                    ID = table.Column<long>(type: "NUMBER(19)", nullable: false)
-                        .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1")
+                    ID = table.Column<long>(type: TipoNumber, nullable: false)
+                        .Annotation(OracleIdentity, OracleIdentityConfig)
                 },
                 constraints: table =>
                 {
@@ -39,13 +55,13 @@ namespace Sprint_1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Chaveiro",
+                name: TabelaChaveiro,
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "NUMBER(19)", nullable: false)
-                        .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
-                    Dispositivo = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    MotoId = table.Column<long>(type: "NUMBER(19)", nullable: false)
+                    Id = table.Column<long>(type: TipoNumber, nullable: false)
+                        .Annotation(OracleIdentity, OracleIdentityConfig),
+                    Dispositivo = table.Column<string>(type: TipoTexto, nullable: false),
+                    MotoId = table.Column<long>(type: TipoNumber, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,23 +69,23 @@ namespace Sprint_1.Migrations
                     table.ForeignKey(
                         name: "FK_Chaveiro_Motos_MotoId",
                         column: x => x.MotoId,
-                        principalTable: "Motos",
+                        principalTable: TabelaMotos,
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "FUNCIONARIO",
+                name: TabelaFuncionario,
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "NUMBER(19)", nullable: false)
-                        .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
-                    NOME = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    CPF = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    EMAIL = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    RG = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    TELEFONE = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    PatioId = table.Column<long>(type: "NUMBER(19)", nullable: true)
+                    Id = table.Column<long>(type: TipoNumber, nullable: false)
+                        .Annotation(OracleIdentity, OracleIdentityConfig),
+                    NOME = table.Column<string>(type: TipoTexto, nullable: false),
+                    CPF = table.Column<string>(type: TipoTexto, nullable: false),
+                    EMAIL = table.Column<string>(type: TipoTexto, nullable: false),
+                    RG = table.Column<string>(type: TipoTexto, nullable: false),
+                    TELEFONE = table.Column<string>(type: TipoTexto, nullable: false),
+                    PatioId = table.Column<long>(type: TipoNumber, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -77,16 +93,16 @@ namespace Sprint_1.Migrations
                     table.ForeignKey(
                         name: "FK_FUNCIONARIO_PATIO_PatioId",
                         column: x => x.PatioId,
-                        principalTable: "PATIO",
+                        principalTable: TabelaPatio,
                         principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
-                name: "MotoPatio",
+                name: TabelaMotoPatio,
                 columns: table => new
                 {
-                    MotosId = table.Column<long>(type: "NUMBER(19)", nullable: false),
-                    PatiosId = table.Column<long>(type: "NUMBER(19)", nullable: false)
+                    MotosId = table.Column<long>(type: TipoNumber, nullable: false),
+                    PatiosId = table.Column<long>(type: TipoNumber, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -94,51 +110,42 @@ namespace Sprint_1.Migrations
                     table.ForeignKey(
                         name: "FK_MotoPatio_Motos_MotosId",
                         column: x => x.MotosId,
-                        principalTable: "Motos",
+                        principalTable: TabelaMotos,
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_MotoPatio_PATIO_PatiosId",
                         column: x => x.PatiosId,
-                        principalTable: "PATIO",
+                        principalTable: TabelaPatio,
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Chaveiro_MotoId",
-                table: "Chaveiro",
+                table: TabelaChaveiro,
                 column: "MotoId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_FUNCIONARIO_PatioId",
-                table: "FUNCIONARIO",
+                table: TabelaFuncionario,
                 column: "PatioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MotoPatio_PatiosId",
-                table: "MotoPatio",
+                table: TabelaMotoPatio,
                 column: "PatiosId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Chaveiro");
-
-            migrationBuilder.DropTable(
-                name: "FUNCIONARIO");
-
-            migrationBuilder.DropTable(
-                name: "MotoPatio");
-
-            migrationBuilder.DropTable(
-                name: "Motos");
-
-            migrationBuilder.DropTable(
-                name: "PATIO");
+            migrationBuilder.DropTable(name: TabelaChaveiro);
+            migrationBuilder.DropTable(name: TabelaFuncionario);
+            migrationBuilder.DropTable(name: TabelaMotoPatio);
+            migrationBuilder.DropTable(name: TabelaMotos);
+            migrationBuilder.DropTable(name: TabelaPatio);
         }
     }
 }
