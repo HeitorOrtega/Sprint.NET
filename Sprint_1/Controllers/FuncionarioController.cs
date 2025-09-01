@@ -18,10 +18,10 @@ namespace Sprint_1.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FuncionarioDTO>>> GetTodos()
+        public async Task<ActionResult<IEnumerable<FuncionarioDto>>> GetTodos()
         {
             var lista = await _context.Funcionarios
-                .Select(f => new FuncionarioDTO
+                .Select(f => new FuncionarioDto
                 {
                     Id = f.Id,
                     Nome = f.Nome,
@@ -37,14 +37,14 @@ namespace Sprint_1.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<FuncionarioDTO>> GetPorId(long id)
+        public async Task<ActionResult<FuncionarioDto>> GetPorId(long id)
         {
             var funcionario = await _context.Funcionarios.FindAsync(id);
 
             if (funcionario == null)
                 return NotFound();
 
-            return Ok(new FuncionarioDTO
+            return Ok(new FuncionarioDto
             {
                 Id = funcionario.Id,
                 Nome = funcionario.Nome,
@@ -57,11 +57,11 @@ namespace Sprint_1.Controllers
         }
 
         [HttpGet("buscarPorNome")]
-        public async Task<ActionResult<IEnumerable<FuncionarioDTO>>> BuscarPorNome([FromQuery] string nome)
+        public async Task<ActionResult<IEnumerable<FuncionarioDto>>> BuscarPorNome([FromQuery] string nome)
         {
             var lista = await _context.Funcionarios
                 .Where(f => f.Nome.ToLower().Contains(nome.ToLower()))
-                .Select(f => new FuncionarioDTO
+                .Select(f => new FuncionarioDto
                 {
                     Id = f.Id,
                     Nome = f.Nome,
@@ -77,7 +77,7 @@ namespace Sprint_1.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<FuncionarioDTO>> Criar(FuncionarioCreateDTO dto)
+        public async Task<ActionResult<FuncionarioDto>> Criar(FuncionarioCreateDTO dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Nome) || string.IsNullOrWhiteSpace(dto.Cpf))
                 return BadRequest("Nome e CPF são obrigatórios.");
@@ -95,7 +95,7 @@ namespace Sprint_1.Controllers
             _context.Funcionarios.Add(funcionario);
             await _context.SaveChangesAsync();
 
-            var retorno = new FuncionarioDTO
+            var retorno = new FuncionarioDto
             {
                 Id = funcionario.Id,
                 Nome = funcionario.Nome,

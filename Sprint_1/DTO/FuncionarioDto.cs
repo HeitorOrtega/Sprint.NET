@@ -1,6 +1,6 @@
 ﻿namespace Sprint_1.DTOs
 {
-    public class FuncionarioDTO
+    public class FuncionarioDto
     {
         public long Id { get; set; }
         public string Nome { get; set; }

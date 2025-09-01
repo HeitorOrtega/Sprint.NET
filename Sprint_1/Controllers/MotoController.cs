@@ -18,10 +18,10 @@ namespace Sprint_1.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MotoDTO>>> GetTodos()
+        public async Task<ActionResult<IEnumerable<MotoDto>>> GetTodos()
         {
             var motos = await _context.Motos
-                .Select(m => new MotoDTO
+                .Select(m => new MotoDto
                 {
                     Id = m.Id,
                     Marca = m.Cor,
@@ -35,13 +35,13 @@ namespace Sprint_1.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<MotoDTO>> GetPorId(long id)
+        public async Task<ActionResult<MotoDto>> GetPorId(long id)
         {
             var moto = await _context.Motos.FindAsync(id);
             if (moto == null)
                 return NotFound();
 
-            return Ok(new MotoDTO
+            return Ok(new MotoDto
             {
                 Id = moto.Id,
                 Marca = moto.Cor,
@@ -52,7 +52,7 @@ namespace Sprint_1.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<MotoDTO>> Criar(MotoCreateDTO dto)
+        public async Task<ActionResult<MotoDto>> Criar(MotoCreateDTO dto)
         {
             var novaMoto = new Moto
             {

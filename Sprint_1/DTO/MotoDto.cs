@@ -1,6 +1,6 @@
 ﻿namespace Sprint_1.DTOs
 {
-    public class MotoDTO
+    public class MotoDto
     {
         public long Id { get; set; }
         public string Marca { get; set; }

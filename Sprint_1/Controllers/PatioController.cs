@@ -19,10 +19,10 @@ namespace Sprint_1.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PatioDTO>>> GetTodos()
+        public async Task<ActionResult<IEnumerable<PatioDto>>> GetTodos()
         {
             var patios = await _context.Patios
-                .Select(p => new PatioDTO
+                .Select(p => new PatioDto
                 {
                     Id = p.Id,
                     Localizacao = p.Localizacao
@@ -33,13 +33,13 @@ namespace Sprint_1.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PatioDTO>> GetPorId(long id)
+        public async Task<ActionResult<PatioDto>> GetPorId(long id)
         {
             var patio = await _context.Patios.FindAsync(id);
             if (patio == null)
                 return NotFound();
 
-            return Ok(new PatioDTO
+            return Ok(new PatioDto
             {
                 Id = patio.Id,
                 Localizacao = patio.Localizacao
@@ -47,7 +47,7 @@ namespace Sprint_1.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PatioDTO>> Criar([FromBody] PatioCreateDTO dto)
+        public async Task<ActionResult<PatioDto>> Criar([FromBody] PatioCreateDTO dto)
         {
             var novoPatio = new Patio
             {
@@ -57,7 +57,7 @@ namespace Sprint_1.Controllers
             _context.Patios.Add(novoPatio);
             await _context.SaveChangesAsync();
 
-            var patioCriadoDTO = new PatioDTO
+            var patioCriadoDTO = new PatioDto
             {
                 Id = novoPatio.Id,
                 Localizacao = novoPatio.Localizacao
