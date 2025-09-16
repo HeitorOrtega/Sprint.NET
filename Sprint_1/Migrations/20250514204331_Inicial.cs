@@ -15,13 +15,12 @@ namespace Sprint_1.Migrations
         private const string OracleIdentity = "Oracle:Identity";
         private const string OracleIdentityConfig = "START WITH 1 INCREMENT BY 1";
 
-        private const string TabelaMotos = "Motos";
-        private const string TabelaPatio = "PATIO";
-        private const string TabelaChaveiro = "Chaveiro";
-        private const string TabelaChaveiroUpper = "CHAVEIRO";
-
-        private const string TabelaFuncionario = "FUNCIONARIO";
-        private const string TabelaMotoPatio = "MotoPatio";
+        // Corrigido para maiúsculo
+        private const string TabelaMotos = "MOTOS";
+        private const string TabelaPatio = "PATIOS";
+        private const string TabelaChaveiro = "CHAVEIROS";
+        private const string TabelaFuncionario = "FUNCIONARIOS";
+        private const string TabelaMotoPatio = "MOTOS_PATIOS";
 
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,7 +37,7 @@ namespace Sprint_1.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Motos", x => x.Id);
+                    table.PrimaryKey($"PK_{TabelaMotos}", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -46,11 +45,12 @@ namespace Sprint_1.Migrations
                 columns: table => new
                 {
                     ID = table.Column<long>(type: TipoNumber, nullable: false)
-                        .Annotation(OracleIdentity, OracleIdentityConfig)
+                        .Annotation(OracleIdentity, OracleIdentityConfig),
+                    Localizacao = table.Column<string>(type: TipoTexto, nullable: false) 
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PATIO", x => x.ID);
+                    table.PrimaryKey($"PK_{TabelaPatio}", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -88,7 +88,7 @@ namespace Sprint_1.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FUNCIONARIO", x => x.Id);
+                    table.PrimaryKey($"PK_{TabelaFuncionario}", x => x.Id);
                     table.ForeignKey(
                         name: $"FK_{TabelaFuncionario}_{TabelaPatio}_PatioId",
                         column: x => x.PatioId,
@@ -105,7 +105,7 @@ namespace Sprint_1.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MotoPatio", x => new { x.MotosId, x.PatiosId });
+                    table.PrimaryKey($"PK_{TabelaMotoPatio}", x => new { x.MotosId, x.PatiosId });
                     table.ForeignKey(
                         name: $"FK_{TabelaMotoPatio}_{TabelaMotos}_MotosId",
                         column: x => x.MotosId,
@@ -127,12 +127,12 @@ namespace Sprint_1.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_FUNCIONARIO_PatioId",
+                name: $"IX_{TabelaFuncionario}_PatioId",
                 table: TabelaFuncionario,
                 column: "PatioId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MotoPatio_PatiosId",
+                name: $"IX_{TabelaMotoPatio}_PatiosId",
                 table: TabelaMotoPatio,
                 column: "PatiosId");
         }

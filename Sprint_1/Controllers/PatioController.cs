@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Sprint_1.Data;
 using Sprint_1.DTOs;
 using Sprint_1.Models;
+using Sprint_1.Helpers;
 
 
 namespace Sprint_1.Controllers
@@ -18,18 +19,42 @@ namespace Sprint_1.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PatioDto>>> GetTodos()
+        [HttpGet(Name = "GetPatios")]
+        public async Task<ActionResult<IEnumerable<PatioHateoasDto>>> GetTodos([FromQuery] QueryParameters parameters)
         {
-            var patios = await _context.Patios
-                .Select(p => new PatioDto
-                {
-                    Id = p.Id,
-                    Localizacao = p.Localizacao
-                })
+            var query = _context.Patios.AsQueryable();
+
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)parameters.PageSize);
+
+            Response.Headers.Add("X-Pagination", totalPages.ToString());
+
+            var patios = await query
+                .OrderBy(p => p.Id)
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
                 .ToListAsync();
 
-            return Ok(patios);
+            var hateoasPatios = new List<PatioHateoasDto>();
+            foreach (var patio in patios)
+            {
+                var dto = new PatioHateoasDto
+                {
+                    Id = patio.Id,
+                    Localizacao = patio.Localizacao
+                };
+
+                dto.Links.Add(new Link
+                {
+                    Href = Url.Link("GetPatioById", new { id = patio.Id }),
+                    Rel = "self",
+                    Method = "GET"
+                });
+
+                hateoasPatios.Add(dto);
+            }
+
+            return Ok(hateoasPatios);
         }
 
         [HttpGet("{id}")]

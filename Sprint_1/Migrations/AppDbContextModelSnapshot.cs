@@ -34,7 +34,7 @@ namespace Sprint_1.Migrations
 
                     b.HasIndex("PatiosId");
 
-                    b.ToTable("MotoPatio");
+                    b.ToTable("MotoPatio", (string)null);
                 });
 
             modelBuilder.Entity("Sprint_1.Models.Chaveiro", b =>
@@ -57,7 +57,7 @@ namespace Sprint_1.Migrations
                     b.HasIndex("MotoId")
                         .IsUnique();
 
-                    b.ToTable("CHAVEIRO");
+                    b.ToTable("Chaveiro", (string)null);
                 });
 
             modelBuilder.Entity("Sprint_1.Models.Funcionario", b =>
@@ -100,7 +100,7 @@ namespace Sprint_1.Migrations
 
                     b.HasIndex("PatioId");
 
-                    b.ToTable("FUNCIONARIO");
+                    b.ToTable("FUNCIONARIO", (string)null);
                 });
 
             modelBuilder.Entity("Sprint_1.Models.Moto", b =>
@@ -124,7 +124,7 @@ namespace Sprint_1.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Motos");
+                    b.ToTable("Motos", (string)null);
                 });
 
             modelBuilder.Entity("Sprint_1.Models.Patio", b =>
@@ -136,14 +136,9 @@ namespace Sprint_1.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Localizacao")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("LOCALIZACAO");
-
                     b.HasKey("Id");
 
-                    b.ToTable("PATIO");
+                    b.ToTable("PATIO", (string)null);
                 });
 
             modelBuilder.Entity("MotoPatio", b =>
@@ -174,11 +169,9 @@ namespace Sprint_1.Migrations
 
             modelBuilder.Entity("Sprint_1.Models.Funcionario", b =>
                 {
-                    b.HasOne("Sprint_1.Models.Patio", "Patio")
+                    b.HasOne("Sprint_1.Models.Patio", null)
                         .WithMany("Funcionarios")
                         .HasForeignKey("PatioId");
-
-                    b.Navigation("Patio");
                 });
 
             modelBuilder.Entity("Sprint_1.Models.Moto", b =>
