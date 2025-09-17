@@ -1,8 +1,6 @@
-﻿using Sprint_1.Models;
-
-namespace Sprint_1.DTOs
+﻿namespace Sprint_1.DTOs
 {
-    public class Link
+    public class LinkPatio
     {
         public string Href { get; set; }
         public string Rel { get; set; }
@@ -14,6 +12,6 @@ namespace Sprint_1.DTOs
         public long Id { get; set; }
         public string Localizacao { get; set; }
 
-        public List<Link> Links { get; set; } = new List<Link>();
+        public List<LinkPatio> Links { get; set; } = new List<LinkPatio>();
     }
 }

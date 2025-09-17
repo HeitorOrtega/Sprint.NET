@@ -4,7 +4,7 @@ using Sprint_1.Data;
 using Sprint_1.DTOs;
 using Sprint_1.Models;
 using Sprint_1.Helpers;
-
+using System.Text.Json;
 
 namespace Sprint_1.Controllers
 {
@@ -27,7 +27,15 @@ namespace Sprint_1.Controllers
             var totalCount = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalCount / (double)parameters.PageSize);
 
-            Response.Headers.Add("X-Pagination", totalPages.ToString());
+            var paginationMetadata = new
+            {
+                totalCount,
+                pageSize = parameters.PageSize,
+                currentPage = parameters.PageNumber,
+                totalPages
+            };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 
             var patios = await query
                 .OrderBy(p => p.Id)
@@ -35,45 +43,59 @@ namespace Sprint_1.Controllers
                 .Take(parameters.PageSize)
                 .ToListAsync();
 
-            var hateoasPatios = new List<PatioHateoasDto>();
-            foreach (var patio in patios)
+            var hateoasPatios = patios.Select(p => CriarLinks(p)).ToList();
+
+            var paginationLinks = new List<LinkPatio>
             {
-                var dto = new PatioHateoasDto
+                new LinkPatio
                 {
-                    Id = patio.Id,
-                    Localizacao = patio.Localizacao
-                };
-
-                dto.Links.Add(new Link
-                {
-                    Href = Url.Link("GetPatioById", new { id = patio.Id }),
-                    Rel = "self",
+                    Href = Url.Link("GetPatios", new { pageNumber = 1, pageSize = parameters.PageSize }),
+                    Rel = "first",
                     Method = "GET"
-                });
+                },
+                new LinkPatio
+                {
+                    Href = Url.Link("GetPatios", new { pageNumber = Math.Max(1, parameters.PageNumber - 1), pageSize = parameters.PageSize }),
+                    Rel = "prev",
+                    Method = "GET"
+                },
+                new LinkPatio
+                {
+                    Href = Url.Link("GetPatios", new { pageNumber = Math.Min(totalPages, parameters.PageNumber + 1), pageSize = parameters.PageSize }),
+                    Rel = "next",
+                    Method = "GET"
+                },
+                new LinkPatio
+                {
+                    Href = Url.Link("GetPatios", new { pageNumber = totalPages, pageSize = parameters.PageSize }),
+                    Rel = "last",
+                    Method = "GET"
+                }
+            };
 
-                hateoasPatios.Add(dto);
-            }
-
-            return Ok(hateoasPatios);
+            return Ok(new
+            {
+                Data = hateoasPatios,
+                Pagination = paginationLinks
+            });
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<PatioDto>> GetPorId(long id)
+        [HttpGet("{id}", Name = "GetPatioById")]
+        public async Task<ActionResult<PatioHateoasDto>> GetPorId(long id)
         {
             var patio = await _context.Patios.FindAsync(id);
             if (patio == null)
                 return NotFound();
 
-            return Ok(new PatioDto
-            {
-                Id = patio.Id,
-                Localizacao = patio.Localizacao
-            });
+            return Ok(CriarLinks(patio));
         }
 
-        [HttpPost]
-        public async Task<ActionResult<PatioDto>> Criar([FromBody] PatioCreateDto dto)
+        [HttpPost(Name = "CreatePatio")]
+        public async Task<ActionResult<PatioHateoasDto>> Criar([FromBody] PatioCreateDto dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.Localizacao))
+                return BadRequest("Localização é obrigatória.");
+
             var novoPatio = new Patio
             {
                 Localizacao = dto.Localizacao
@@ -82,18 +104,17 @@ namespace Sprint_1.Controllers
             _context.Patios.Add(novoPatio);
             await _context.SaveChangesAsync();
 
-            var patioCriadoDTO = new PatioDto
-            {
-                Id = novoPatio.Id,
-                Localizacao = novoPatio.Localizacao
-            };
+            var dtoComLinks = CriarLinks(novoPatio);
 
-            return CreatedAtAction(nameof(GetPorId), new { id = novoPatio.Id }, patioCriadoDTO);
+            return CreatedAtRoute("GetPatioById", new { id = novoPatio.Id }, dtoComLinks);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Atualizar(long id, [FromBody] PatioUpdateDto dto)
+        [HttpPut("{id}", Name = "UpdatePatio")]
+        public async Task<ActionResult<PatioHateoasDto>> Atualizar(long id, [FromBody] PatioUpdateDto dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.Localizacao))
+                return BadRequest("Localização é obrigatória.");
+
             var patio = await _context.Patios.FindAsync(id);
             if (patio == null)
                 return NotFound();
@@ -102,10 +123,11 @@ namespace Sprint_1.Controllers
 
             _context.Patios.Update(patio);
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            return Ok(CriarLinks(patio));
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "DeletePatio")]
         public async Task<IActionResult> Deletar(long id)
         {
             var patio = await _context.Patios.FindAsync(id);
@@ -114,7 +136,47 @@ namespace Sprint_1.Controllers
 
             _context.Patios.Remove(patio);
             await _context.SaveChangesAsync();
+
             return NoContent();
+        }
+
+        private PatioHateoasDto CriarLinks(Patio patio)
+        {
+            var dto = new PatioHateoasDto
+            {
+                Id = patio.Id,
+                Localizacao = patio.Localizacao
+            };
+
+            dto.Links.Add(new LinkPatio()
+            {
+                Href = Url.Link("GetPatioById", new { id = patio.Id }),
+                Rel = "self",
+                Method = "GET"
+            });
+
+            dto.Links.Add(new LinkPatio()
+            {
+                Href = Url.Link("UpdatePatio", new { id = patio.Id }),
+                Rel = "update",
+                Method = "PUT"
+            });
+
+            dto.Links.Add(new LinkPatio()
+            {
+                Href = Url.Link("DeletePatio", new { id = patio.Id }),
+                Rel = "delete",
+                Method = "DELETE"
+            });
+
+            dto.Links.Add(new LinkPatio()
+            {
+                Href = Url.Link("GetPatios", null),
+                Rel = "all",
+                Method = "GET"
+            });
+
+            return dto;
         }
     }
 }
