@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Sprint_1.Data;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Sprint_1.DTOs;
-using Sprint_1.Models;
 using Sprint_1.Helpers;
-using System.Text.Json;
+using Sprint_1.Models;
 
 namespace Sprint_1.Controllers
 {
@@ -12,19 +10,17 @@ namespace Sprint_1.Controllers
     [Route("v1/funcionarios")]
     public class FuncionarioController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IFuncionarioService _service;
 
-        public FuncionarioController(AppDbContext context)
+        public FuncionarioController(IFuncionarioService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [HttpGet(Name = "GetFuncionarios")]
-        public async Task<ActionResult<IEnumerable<FuncionarioHateoasDto>>> GetTodos([FromQuery] QueryParameters parameters)
+        public async Task<ActionResult> GetTodos([FromQuery] QueryParameters parameters)
         {
-            var query = _context.Funcionarios.AsQueryable();
-
-            var totalCount = await query.CountAsync();
+            var (items, totalCount) = await _service.GetAllAsync(parameters);
             var totalPages = (int)Math.Ceiling(totalCount / (double)parameters.PageSize);
 
             var paginationMetadata = new
@@ -36,13 +32,7 @@ namespace Sprint_1.Controllers
             };
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 
-            var funcionarios = await query
-                .OrderBy(f => f.Id)
-                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
-                .Take(parameters.PageSize)
-                .ToListAsync();
-
-            var hateoasFuncionarios = funcionarios.Select(f => CriarLinks(f)).ToList();
+            var hateoas = items.Select(f => CriarLinks(f)).ToList();
 
             var paginationLinks = new List<LinkFuncionario>
             {
@@ -52,16 +42,14 @@ namespace Sprint_1.Controllers
                 new LinkFuncionario { Href = Url.Link("GetFuncionarios", new { pageNumber = totalPages, pageSize = parameters.PageSize }), Rel = "last", Method = "GET" }
             };
 
-            return Ok(new { Data = hateoasFuncionarios, Pagination = paginationLinks });
+            return Ok(new { Data = hateoas, Pagination = paginationLinks });
         }
 
         [HttpGet("{id}", Name = "GetFuncionarioById")]
         public async Task<ActionResult<FuncionarioHateoasDto>> GetPorId(long id)
         {
-            var funcionario = await _context.Funcionarios.FindAsync(id);
-            if (funcionario == null)
-                return NotFound();
-
+            var funcionario = await _service.GetByIdAsync(id);
+            if (funcionario == null) return NotFound();
             return Ok(CriarLinks(funcionario));
         }
 
@@ -71,7 +59,7 @@ namespace Sprint_1.Controllers
             if (string.IsNullOrWhiteSpace(dto.Nome) || string.IsNullOrWhiteSpace(dto.Cpf))
                 return BadRequest("Nome e CPF são obrigatórios.");
 
-            var funcionario = new Funcionario
+            var entity = new Funcionario
             {
                 Nome = dto.Nome,
                 Cpf = dto.Cpf,
@@ -81,41 +69,33 @@ namespace Sprint_1.Controllers
                 PatioId = dto.PatioId
             };
 
-            _context.Funcionarios.Add(funcionario);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtRoute("GetFuncionarioById", new { id = funcionario.Id }, CriarLinks(funcionario));
+            var created = await _service.CreateAsync(entity);
+            return CreatedAtRoute("GetFuncionarioById", new { id = created.Id }, CriarLinks(created));
         }
 
         [HttpPut("{id}", Name = "UpdateFuncionario")]
         public async Task<ActionResult<FuncionarioHateoasDto>> Atualizar(long id, FuncionarioUpdateDto dto)
         {
-            var funcionario = await _context.Funcionarios.FindAsync(id);
-            if (funcionario == null)
-                return NotFound();
+            var entity = new Funcionario
+            {
+                Nome = dto.Nome,
+                Cpf = dto.Cpf,
+                Email = dto.Email,
+                Rg = dto.Rg,
+                Telefone = dto.Telefone,
+                PatioId = dto.PatioId
+            };
 
-            funcionario.Nome = dto.Nome;
-            funcionario.Cpf = dto.Cpf;
-            funcionario.Email = dto.Email;
-            funcionario.Rg = dto.Rg;
-            funcionario.Telefone = dto.Telefone;
-            funcionario.PatioId = dto.PatioId;
-
-            await _context.SaveChangesAsync();
-
-            return Ok(CriarLinks(funcionario));
+            var updated = await _service.UpdateAsync(id, entity);
+            if (updated == null) return NotFound();
+            return Ok(CriarLinks(updated));
         }
 
         [HttpDelete("{id}", Name = "DeleteFuncionario")]
         public async Task<IActionResult> Deletar(long id)
         {
-            var funcionario = await _context.Funcionarios.FindAsync(id);
-            if (funcionario == null)
-                return NotFound();
-
-            _context.Funcionarios.Remove(funcionario);
-            await _context.SaveChangesAsync();
-
+            var removed = await _service.DeleteAsync(id);
+            if (!removed) return NotFound();
             return NoContent();
         }
 

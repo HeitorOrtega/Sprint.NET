@@ -15,6 +15,10 @@ if (string.IsNullOrEmpty(connString))
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
+builder.Services.AddScoped<IMotoService, MotoService>();
+builder.Services.AddScoped<IPatioService, PatioService>();
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseOracle(connString));

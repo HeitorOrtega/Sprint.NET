@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Sprint_1.Data;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Sprint_1.DTOs;
-using Sprint_1.Models;
 using Sprint_1.Helpers;
-using System.Text.Json;
+using Sprint_1.Models;
 
 namespace Sprint_1.Controllers
 {
@@ -12,19 +10,17 @@ namespace Sprint_1.Controllers
     [Route("v1/motos")]
     public class MotoController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IMotoService _service;
 
-        public MotoController(AppDbContext context)
+        public MotoController(IMotoService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [HttpGet(Name = "GetMotos")]
-        public async Task<ActionResult<IEnumerable<MotoHateoasDto>>> GetTodos([FromQuery] QueryParameters parameters)
+        public async Task<ActionResult> GetTodos([FromQuery] QueryParameters parameters)
         {
-            var query = _context.Motos.AsQueryable();
-
-            var totalCount = await query.CountAsync();
+            var (items, totalCount) = await _service.GetAllAsync(parameters);
             var totalPages = (int)Math.Ceiling(totalCount / (double)parameters.PageSize);
 
             var paginationMetadata = new
@@ -36,80 +32,53 @@ namespace Sprint_1.Controllers
             };
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 
-            var motos = await query
-                .OrderBy(m => m.Id)
-                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
-                .Take(parameters.PageSize)
-                .ToListAsync();
+            var hateoas = items.Select(m => CriarLinks(m)).ToList();
 
-            var hateoasMotos = motos.Select(m => CriarLinks(m)).ToList();
-
-            var paginationLinks = new List<LinkMoto>
-            {
-                new LinkMoto { Href = Url.Link("GetMotos", new { pageNumber = 1, pageSize = parameters.PageSize }), Rel = "first", Method = "GET" },
-                new LinkMoto { Href = Url.Link("GetMotos", new { pageNumber = Math.Max(1, parameters.PageNumber - 1), pageSize = parameters.PageSize }), Rel = "prev", Method = "GET" },
-                new LinkMoto { Href = Url.Link("GetMotos", new { pageNumber = Math.Min(totalPages, parameters.PageNumber + 1), pageSize = parameters.PageSize }), Rel = "next", Method = "GET" },
-                new LinkMoto { Href = Url.Link("GetMotos", new { pageNumber = totalPages, pageSize = parameters.PageSize }), Rel = "last", Method = "GET" }
-            };
-
-            return Ok(new { Data = hateoasMotos, Pagination = paginationLinks });
+            return Ok(hateoas);
         }
 
         [HttpGet("{id}", Name = "GetMotoById")]
         public async Task<ActionResult<MotoHateoasDto>> GetPorId(long id)
         {
-            var moto = await _context.Motos.FindAsync(id);
-            if (moto == null)
-                return NotFound();
-
+            var moto = await _service.GetByIdAsync(id);
+            if (moto == null) return NotFound();
             return Ok(CriarLinks(moto));
         }
 
         [HttpPost(Name = "CreateMoto")]
-        public async Task<ActionResult<MotoHateoasDto>> Criar([FromBody] MotoCreateDto dto)
+        public async Task<ActionResult<MotoHateoasDto>> Criar(MotoCreateDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Marca) || string.IsNullOrWhiteSpace(dto.Placa))
-                return BadRequest("Marca e Placa são obrigatórias.");
-
-            var novaMoto = new Moto
+            var entity = new Moto
             {
-                Cor = dto.Marca,
+                Cor = dto.Cor,
                 Placa = dto.Placa,
-                DataFabricacao = new DateTime(dto.Ano, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                DataFabricacao = dto.DataFabricacao
             };
 
-            _context.Motos.Add(novaMoto);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtRoute("GetMotoById", new { id = novaMoto.Id }, CriarLinks(novaMoto));
+            var created = await _service.CreateAsync(entity);
+            return CreatedAtRoute("GetMotoById", new { id = created.Id }, CriarLinks(created));
         }
 
         [HttpPut("{id}", Name = "UpdateMoto")]
         public async Task<ActionResult<MotoHateoasDto>> Atualizar(long id, MotoUpdateDto dto)
         {
-            var moto = await _context.Motos.FindAsync(id);
-            if (moto == null)
-                return NotFound();
+            var entity = new Moto
+            {
+                Cor = dto.Cor,
+                Placa = dto.Placa,
+                DataFabricacao = dto.DataFabricacao
+            };
 
-            moto.Cor = dto.Marca;
-            moto.Placa = dto.Placa;
-            moto.DataFabricacao = new DateTime(dto.Ano, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(CriarLinks(moto));
+            var updated = await _service.UpdateAsync(id, entity);
+            if (updated == null) return NotFound();
+            return Ok(CriarLinks(updated));
         }
 
         [HttpDelete("{id}", Name = "DeleteMoto")]
         public async Task<IActionResult> Deletar(long id)
         {
-            var moto = await _context.Motos.FindAsync(id);
-            if (moto == null)
-                return NotFound();
-
-            _context.Motos.Remove(moto);
-            await _context.SaveChangesAsync();
-
+            var removed = await _service.DeleteAsync(id);
+            if (!removed) return NotFound();
             return NoContent();
         }
 
@@ -118,10 +87,9 @@ namespace Sprint_1.Controllers
             var dto = new MotoHateoasDto
             {
                 Id = moto.Id,
-                Marca = moto.Cor,
-                Modelo = moto.Placa,
-                Ano = moto.DataFabricacao.Year,
-                Placa = moto.Placa
+                Cor = moto.Cor,
+                Placa = moto.Placa,
+                DataFabricacao = moto.DataFabricacao
             };
 
             dto.Links.Add(new LinkMoto { Href = Url.Link("GetMotoById", new { id = moto.Id }), Rel = "self", Method = "GET" });
@@ -131,5 +99,6 @@ namespace Sprint_1.Controllers
 
             return dto;
         }
+
     }
 }
