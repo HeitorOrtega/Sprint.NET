@@ -1,6 +1,6 @@
 # Sprint 1 - .NET API
 
-API desenvolvida em ASP.NET Core para gerenciamento de motocicletas, funcionários e pátios.  
+API desenvolvida em ASP.NET Core para gerenciamento de motocicletas, funcionários e pátios.
 Parte do projeto acadêmico para a **Mottu**.
 
 ---
@@ -8,21 +8,31 @@ Parte do projeto acadêmico para a **Mottu**.
 # 💡 Sobre o Projeto
 Este projeto é uma API RESTful em ASP.NET Core desenvolvida para gerenciar motos, funcionários e pátios de uma empresa de entregas.
 
-Faz parte de um sistema maior que busca organizar a frota de motocicletas, controlar a alocação em pátios e o cadastro de funcionários.
+- A solução foi projetada para:
 
-A API se conecta a um banco de dados Oracle e permite realizar operações de criação, leitura, atualização e exclusão (CRUD) para cada entidade.
+- Organizar a frota de motocicletas
+
+- Controlar a alocação em pátios
+
+- Cadastrar e gerenciar funcionários
+
+👉 A API se conecta a um banco de dados Oracle e permite realizar operações completas de CRUD para cada entidade.
 
 ---
 
-## 📌 Descrição do Projeto
+# Requisito inicial:
+- Entrar na **appsettings.json** e colocar Id=557825, Password:fiap25
+<img width="847" height="286" alt="image" src="https://github.com/user-attachments/assets/02a139b1-3692-4c13-b49d-0cdb9638cc81" />
 
-Esta API fornece endpoints RESTful para **cadastrar, consultar, atualizar e excluir** informações sobre:
+---
 
-- 🏍️ Motos  
-- 👷 Funcionários  
-- 🏢 Pátios  
+📌 Funcionalidades
 
-Ela faz parte do sistema de atendimento automotivo **Mottu**, promovendo uma solução eficiente para a gestão de oficinas e veículos.
+- 🏍️ Motos: cadastro, consulta, atualização e exclusão
+
+- 👷 Funcionários: gerenciamento completo, incluindo busca por nome
+
+- 🏢 Pátios: controle e manutenção de registros
 
 ---
 
@@ -30,40 +40,42 @@ Ela faz parte do sistema de atendimento automotivo **Mottu**, promovendo uma sol
 
 ### 📍 Motos
 
-| Método | Rota             | Descrição                            |
-|--------|------------------|-----------------------------------   |
-| GET    | `/v1/motos`       | Lista todas as motos                |
-| GET    | `/v1/motos/{id}`  | Retorna uma moto específica         |
-| POST   | `/v1/motos`       | Cadastra uma nova moto              |
-| PUT    | `/v1/motos/{id}`  | Atualiza os dados de uma moto       |
-| DELETE | `/v1/motos/{id}`  | Remove uma moto do sistema          |
+| Método | Rota             | Descrição                     |
+| ------ | ---------------- | ----------------------------- |
+| GET    | `/v1/motos`      | Lista todas as motos          |
+| GET    | `/v1/motos/{id}` | Retorna uma moto específica   |
+| POST   | `/v1/motos`      | Cadastra uma nova moto        |
+| PUT    | `/v1/motos/{id}` | Atualiza os dados de uma moto |
+| DELETE | `/v1/motos/{id}` | Remove uma moto do sistema    |
+
 
 ![image](https://github.com/user-attachments/assets/8c907b04-c2e7-4154-a79e-00d80cf123f5)
 
 
 ### 📍 Funcionários
 
-| Método | Rota                                 | Descrição                             |
-|--------|--------------------------------------|-------------------------------------- |
-| GET    | `/v1/funcionarios`                    | Lista todos os funcionários          |
-| GET    | `/v1/funcionarios/{id}`               | Retorna um funcionário específico    |
-| GET    | `/v1/funcionarios/busca?nome={nome}`  | Busca um funcionário por nome        |
-| POST   | `/v1/funcionarios`                    | Cadastra um novo funcionário         |
-| PUT    | `/v1/funcionarios/{id}`               | Atualiza os dados de um funcionário  |
-| DELETE | `/v1/funcionarios/{id}`               | Remove um funcionário do sistema     |
+| Método | Rota                                 | Descrição                           |
+| ------ | ------------------------------------ | ----------------------------------- |
+| GET    | `/v1/funcionarios`                   | Lista todos os funcionários         |
+| GET    | `/v1/funcionarios/{id}`              | Retorna um funcionário específico   |
+| GET    | `/v1/funcionarios/busca?nome={nome}` | Busca um funcionário por nome       |
+| POST   | `/v1/funcionarios`                   | Cadastra um novo funcionário        |
+| PUT    | `/v1/funcionarios/{id}`              | Atualiza os dados de um funcionário |
+| DELETE | `/v1/funcionarios/{id}`              | Remove um funcionário do sistema    |
+
 
 ![image](https://github.com/user-attachments/assets/882c795e-5d4b-4c7e-9728-d6d94685c043)
 
 
 ### 📍 Pátios
 
-| Método | Rota             | Descrição                             |
-|--------|------------------|-----------------------------------    |
-| GET    | `/v1/patios`       | Lista todos os pátios               |
-| GET    | `/v1/patios/{id}`  | Retorna um pátio específico         |
-| POST   | `/v1/patios`       | Cadastra um novo pátio              |
-| PUT    | `/v1/patios/{id}`  | Atualiza os dados de um pátio       |
-| DELETE | `/v1/patios/{id}`  | Remove um pátio do sistema          |
+| Método | Rota              | Descrição                     |
+| ------ | ----------------- | ----------------------------- |
+| GET    | `/v1/patios`      | Lista todos os pátios         |
+| GET    | `/v1/patios/{id}` | Retorna um pátio específico   |
+| POST   | `/v1/patios`      | Cadastra um novo pátio        |
+| PUT    | `/v1/patios/{id}` | Atualiza os dados de um pátio |
+| DELETE | `/v1/patios/{id}` | Remove um pátio do sistema    |
 
 ![image](https://github.com/user-attachments/assets/a46272e3-5165-4737-a50f-1da361677a25)
 
@@ -104,15 +116,12 @@ http://localhost:5051/swagger
 
 
 
+👥 Equipe
 
-👤 Contato
-Desenvolvido por Heitor Ortega Silva
-🎓 Curso: Análise e Desenvolvimento de Sistemas – FIAP
-📧 Email: heitor.ortega16@gmail.com
+Projeto desenvolvido para a disciplina de Análise e Desenvolvimento de Sistemas – FIAP.
 
-Participantes:
+- Heitor Ortega Silva – heitor.ortega16@gmail.com
+- Marcos Lourenço – RM 556496
+- Pedro Saraiva – RM 555160
 
-Marcos Lourenço - 556496
-Pedro Saraiva - 555160
-
-
+⚡ Projeto acadêmico – FIAP | Mottu API Sprint 3
