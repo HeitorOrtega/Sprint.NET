@@ -21,7 +21,7 @@ Este projeto é uma API RESTful em ASP.NET Core desenvolvida para gerenciar moto
 ---
 
 # Requisito inicial:
-- Entrar na **appsettings.json** e colocar Id=557825, Password:fiap25
+- Entrar na **appsettings.json** e colocar Id=rm557825, Password:fiap25
 <img width="847" height="286" alt="image" src="https://github.com/user-attachments/assets/02a139b1-3692-4c13-b49d-0cdb9638cc81" />
 
 ---
@@ -120,7 +120,7 @@ http://localhost:5051/swagger
 
 Projeto desenvolvido para a disciplina de Análise e Desenvolvimento de Sistemas – FIAP.
 
-- Heitor Ortega Silva – heitor.ortega16@gmail.com
+- Heitor Ortega Silva – RM 55782
 - Marcos Lourenço – RM 556496
 - Pedro Saraiva – RM 555160
 
