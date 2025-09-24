@@ -26,6 +26,25 @@ Este projeto é uma API RESTful em ASP.NET Core desenvolvida para gerenciar moto
 
 ---
 
+---
+
+### 🚀 Passos para Executar
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/HeitorOrtega/Sprint1.NET.git
+
+# 2. Acesse a pasta do projeto
+cd sprint_1
+
+# 3. Restaure os pacotes e atualize o banco
+dotnet restore
+dotnet ef database update
+
+# 4. Execute a API
+dotnet run
+```
+
 📌 Funcionalidades
 
 - 🏍️ Motos: cadastro, consulta, atualização e exclusão
@@ -59,7 +78,7 @@ Este projeto é uma API RESTful em ASP.NET Core desenvolvida para gerenciar moto
 | GET    | `/v1/funcionarios`                   | Lista todos os funcionários         |
 | GET    | `/v1/funcionarios/{id}`              | Retorna um funcionário específico   |
 | GET    | `/v1/funcionarios/busca?nome={nome}` | Busca um funcionário por nome       |
-| POST   | `/v1/funcionarios`                   | Cadastra um novo funcionário        |
+| POST   | `/v1/funcionarios`                   | Cadastra um novo funcionário (tem que passar um ID de pátio existente) |
 | PUT    | `/v1/funcionarios/{id}`              | Atualiza os dados de um funcionário |
 | DELETE | `/v1/funcionarios/{id}`              | Remove um funcionário do sistema    |
 
@@ -90,37 +109,17 @@ Este projeto é uma API RESTful em ASP.NET Core desenvolvida para gerenciar moto
 - [Oracle Instant Client](https://www.oracle.com/database/technologies/instant-client/downloads.html)
 - Visual Studio, Rider ou outro editor compatível com .NET
 
----
-
-### 🚀 Passos para Executar
-
-```bash
-# 1. Clone o repositório
-git clone https://github.com/HeitorOrtega/Sprint1.NET.git
-
-# 2. Acesse a pasta do projeto
-cd Sprint1.NET
-
-# 3. Restaure os pacotes e atualize o banco
-dotnet restore
-dotnet ef database update
-
-# 4. Execute a API
-dotnet run
-```
 
 🌐 Acesso ao Swagger
 Acesse no navegador:
 
 http://localhost:5051/swagger
 
-
-
 👥 Equipe
 
 Projeto desenvolvido para a disciplina de Análise e Desenvolvimento de Sistemas – FIAP.
 
-- Heitor Ortega Silva – RM 55782
+- Heitor Ortega Silva – RM 557825
 - Marcos Lourenço – RM 556496
 - Pedro Saraiva – RM 555160
 
