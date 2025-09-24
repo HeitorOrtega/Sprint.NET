@@ -21,7 +21,7 @@ Este projeto é uma API RESTful em ASP.NET Core desenvolvida para gerenciar moto
 ---
 
 # Requisito inicial:
-- Entrar na **appsettings.json** e colocar Id=rm557825, Password:fiap25
+- Entrar na **appsettings.json** e colocar Id:rm557825 e Password:fiap25
 <img width="847" height="286" alt="image" src="https://github.com/user-attachments/assets/02a139b1-3692-4c13-b49d-0cdb9638cc81" />
 
 ---
