@@ -1,28 +1,33 @@
 using Microsoft.EntityFrameworkCore;
 using Sprint_1.Data;
 using Oracle.EntityFrameworkCore;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connString = builder.Configuration.GetConnectionString("OracleConnection");
-
 if (string.IsNullOrEmpty(connString))
 {
     throw new InvalidOperationException("A string de conexão 'OracleConnection' não foi encontrada.");
 }
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// 1️⃣ Registrar DbContext antes de Build
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseOracle(connString));
+
+// 2️⃣ Registrar serviços
 builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
 builder.Services.AddScoped<IMotoService, MotoService>();
 builder.Services.AddScoped<IPatioService, PatioService>();
+
+// 3️⃣ Registrar controllers e Swagger
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// 4️⃣ Build do app
 var app = builder.Build();
 
+// 5️⃣ Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -30,20 +35,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapControllers();
-app.Run();
-
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseOracle(connString));
-
-
-app.UseSwagger();
-app.UseSwaggerUI();
 
 app.MapControllers();
 
-
+// 6️⃣ Rodar a aplicação
 await app.RunAsync();
-
-
