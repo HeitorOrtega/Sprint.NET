@@ -37,7 +37,6 @@ app.Run();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseOracle(connString));
 
-var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();

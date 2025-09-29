@@ -1,5 +1,4 @@
-﻿```csharp
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Sprint_1.DTOs;
 using Sprint_1.Helpers;
@@ -139,4 +138,3 @@ namespace Sprint_1.Controllers
         }
     }
 }
-```
