@@ -17,7 +17,13 @@ namespace Sprint_1.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Retorna todos os funcionários com suporte a paginação.
+        /// </summary>
+        /// <param name="parameters">Parâmetros de paginação (pageNumber, pageSize).</param>
+        /// <response code="200">Retorna a lista paginada de funcionários.</response>
         [HttpGet(Name = "GetFuncionarios")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetTodos([FromQuery] QueryParameters parameters)
         {
             var (items, totalCount) = await _service.GetAllAsync(parameters);
@@ -45,7 +51,15 @@ namespace Sprint_1.Controllers
             return Ok(new { Data = hateoas, Pagination = paginationLinks });
         }
 
+        /// <summary>
+        /// Retorna um funcionário pelo ID.
+        /// </summary>
+        /// <param name="id">ID do funcionário.</param>
+        /// <response code="200">Retorna o funcionário.</response>
+        /// <response code="404">Funcionário não encontrado.</response>
         [HttpGet("{id}", Name = "GetFuncionarioById")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<FuncionarioHateoasDto>> GetPorId(long id)
         {
             var funcionario = await _service.GetByIdAsync(id);
@@ -53,7 +67,15 @@ namespace Sprint_1.Controllers
             return Ok(CriarLinks(funcionario));
         }
 
+        /// <summary>
+        /// Cria um novo funcionário.
+        /// </summary>
+        /// <param name="dto">Dados do funcionário a ser criado.</param>
+        /// <response code="201">Funcionário criado com sucesso.</response>
+        /// <response code="400">Dados inválidos.</response>
         [HttpPost(Name = "CreateFuncionario")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<FuncionarioHateoasDto>> Criar(FuncionarioCreateDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Nome) || string.IsNullOrWhiteSpace(dto.Cpf))
@@ -73,7 +95,16 @@ namespace Sprint_1.Controllers
             return CreatedAtRoute("GetFuncionarioById", new { id = created.Id }, CriarLinks(created));
         }
 
+        /// <summary>
+        /// Atualiza um funcionário existente.
+        /// </summary>
+        /// <param name="id">ID do funcionário.</param>
+        /// <param name="dto">Novos dados do funcionário.</param>
+        /// <response code="200">Funcionário atualizado.</response>
+        /// <response code="404">Funcionário não encontrado.</response>
         [HttpPut("{id}", Name = "UpdateFuncionario")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<FuncionarioHateoasDto>> Atualizar(long id, FuncionarioUpdateDto dto)
         {
             var entity = new Funcionario
@@ -91,7 +122,15 @@ namespace Sprint_1.Controllers
             return Ok(CriarLinks(updated));
         }
 
+        /// <summary>
+        /// Deleta um funcionário pelo ID.
+        /// </summary>
+        /// <param name="id">ID do funcionário.</param>
+        /// <response code="204">Funcionário deletado.</response>
+        /// <response code="404">Funcionário não encontrado.</response>
         [HttpDelete("{id}", Name = "DeleteFuncionario")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Deletar(long id)
         {
             var removed = await _service.DeleteAsync(id);

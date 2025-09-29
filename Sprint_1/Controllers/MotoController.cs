@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿```csharp
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Sprint_1.DTOs;
 using Sprint_1.Helpers;
@@ -17,7 +18,13 @@ namespace Sprint_1.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Retorna todas as motos com suporte a paginação.
+        /// </summary>
+        /// <param name="parameters">Parâmetros de paginação (pageNumber, pageSize)</param>
+        /// <returns>Lista paginada de motos</returns>
         [HttpGet(Name = "GetMotos")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetTodos([FromQuery] QueryParameters parameters)
         {
             var (items, totalCount) = await _service.GetAllAsync(parameters);
@@ -34,10 +41,23 @@ namespace Sprint_1.Controllers
 
             var hateoas = items.Select(m => CriarLinks(m)).ToList();
 
-            return Ok(hateoas);
+            var paginationLinks = new List<LinkMoto>
+            {
+                new LinkMoto { Href = Url.Link("GetMotos", new { pageNumber = 1, pageSize = parameters.PageSize }), Rel = "first", Method = "GET" },
+                new LinkMoto { Href = Url.Link("GetMotos", new { pageNumber = Math.Max(1, parameters.PageNumber - 1), pageSize = parameters.PageSize }), Rel = "prev", Method = "GET" },
+                new LinkMoto { Href = Url.Link("GetMotos", new { pageNumber = Math.Min(totalPages, parameters.PageNumber + 1), pageSize = parameters.PageSize }), Rel = "next", Method = "GET" },
+                new LinkMoto { Href = Url.Link("GetMotos", new { pageNumber = totalPages, pageSize = parameters.PageSize }), Rel = "last", Method = "GET" }
+            };
+
+            return Ok(new { Data = hateoas, Pagination = paginationLinks });
         }
 
+        /// <summary>
+        /// Retorna uma moto pelo ID.
+        /// </summary>
         [HttpGet("{id}", Name = "GetMotoById")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<MotoHateoasDto>> GetPorId(long id)
         {
             var moto = await _service.GetByIdAsync(id);
@@ -45,9 +65,17 @@ namespace Sprint_1.Controllers
             return Ok(CriarLinks(moto));
         }
 
+        /// <summary>
+        /// Cria uma nova moto.
+        /// </summary>
         [HttpPost(Name = "CreateMoto")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MotoHateoasDto>> Criar(MotoCreateDto dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.Placa) || string.IsNullOrWhiteSpace(dto.Cor))
+                return BadRequest("Cor e Placa são obrigatórios.");
+
             var entity = new Moto
             {
                 Cor = dto.Cor,
@@ -59,7 +87,12 @@ namespace Sprint_1.Controllers
             return CreatedAtRoute("GetMotoById", new { id = created.Id }, CriarLinks(created));
         }
 
+        /// <summary>
+        /// Atualiza uma moto existente.
+        /// </summary>
         [HttpPut("{id}", Name = "UpdateMoto")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<MotoHateoasDto>> Atualizar(long id, MotoUpdateDto dto)
         {
             var entity = new Moto
@@ -74,7 +107,12 @@ namespace Sprint_1.Controllers
             return Ok(CriarLinks(updated));
         }
 
+        /// <summary>
+        /// Deleta uma moto pelo ID.
+        /// </summary>
         [HttpDelete("{id}", Name = "DeleteMoto")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Deletar(long id)
         {
             var removed = await _service.DeleteAsync(id);
@@ -99,6 +137,6 @@ namespace Sprint_1.Controllers
 
             return dto;
         }
-
     }
 }
+```
