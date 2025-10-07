@@ -31,6 +31,36 @@ Banco Oracle: utilizado para simular um ambiente corporativo real, integrando op
 
 ---
 
+---
+
+## 🧭 Diagrama da Arquitetura (C4 Simplificado)
+
+```mermaid
+graph TD
+    subgraph Usuário
+        A[Cliente / Front-end] -->|Requisições HTTP| B[API .NET Core]
+    end
+
+    subgraph API["Camada da API (ASP.NET Core)"]
+        B --> C1[Controllers]
+        C1 --> C2[Services]
+        C2 --> C3[Repositories]
+    end
+
+    subgraph Banco["Banco de Dados Oracle"]
+        D[(Tabelas Oracle)]
+    end
+
+     C3 --> D
+
+    style B fill:#0366d6,stroke:#fff,stroke-width:2px,color:#fff
+    style D fill:#f39c12,stroke:#fff,stroke-width:2px,color:#fff
+    style C1 fill:#2ecc71,stroke:#fff
+    style C2 fill:#27ae60,stroke:#fff
+    style C3 fill:#1e8449,stroke:#fff
+```
+---
+
 ## ⚙️ Instalação e Execução
 
 ### ✅ Pré-requisitos
