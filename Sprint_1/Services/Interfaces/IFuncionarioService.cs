@@ -1,11 +1,14 @@
 ﻿using Sprint_1.Models;
 using Sprint_1.Helpers;
 
-public interface IFuncionarioService
+namespace Sprint_1.Services.Ìntefaces
 {
-    Task<(IEnumerable<Funcionario> Items, int TotalCount)> GetAllAsync(QueryParameters parameters);
-    Task<Funcionario?> GetByIdAsync(long id);
-    Task<Funcionario> CreateAsync(Funcionario f);
-    Task<Funcionario?> UpdateAsync(long id, Funcionario f);
-    Task<bool> DeleteAsync(long id);
+    public interface IFuncionarioService
+    {
+        Task<(IEnumerable<Funcionario> Items, int TotalCount)> GetAllAsync(QueryParameters parameters);
+        Task<Funcionario?> GetByIdAsync(long id);
+        Task<Funcionario> CreateAsync(Funcionario f);
+        Task<Funcionario?> UpdateAsync(long id, Funcionario f);
+        Task<bool> DeleteAsync(long id);
+    }
 }

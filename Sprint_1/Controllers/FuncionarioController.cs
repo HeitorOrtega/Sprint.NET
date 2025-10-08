@@ -48,7 +48,7 @@ namespace Sprint_1.Controllers
                 new LinkFuncionario { Href = Url.Link("GetFuncionarios", new { pageNumber = totalPages, pageSize = parameters.PageSize }), Rel = "last", Method = "GET" }
             };
 
-            return Ok(new { Data = hateoas, Pagination = paginationLinks });
+            return Ok(hateoas); 
         }
 
         /// <summary>
@@ -78,8 +78,16 @@ namespace Sprint_1.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<FuncionarioHateoasDto>> Criar(FuncionarioCreateDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Nome) || string.IsNullOrWhiteSpace(dto.Cpf))
-                return BadRequest("Nome e CPF são obrigatórios.");
+            if (string.IsNullOrWhiteSpace(dto.Nome))
+                ModelState.AddModelError(nameof(dto.Nome), "O campo Nome é obrigatório.");
+        
+            if (string.IsNullOrWhiteSpace(dto.Cpf))
+                ModelState.AddModelError(nameof(dto.Cpf), "O campo CPF é obrigatório.");
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); 
+            }
 
             var entity = new Funcionario
             {

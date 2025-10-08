@@ -21,7 +21,7 @@ namespace Sprint_1.Controllers
         /// Retorna todas as motos com suporte a paginação.
         /// </summary>
         /// <param name="parameters">Parâmetros de paginação (pageNumber, pageSize)</param>
-        /// <returns>Lista paginada de motos</returns>
+        /// <response code="200">Retorna a lista paginada de motos no corpo e os metadados no header X-Pagination.</response>
         [HttpGet(Name = "GetMotos")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetTodos([FromQuery] QueryParameters parameters)
@@ -39,21 +39,17 @@ namespace Sprint_1.Controllers
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 
             var hateoas = items.Select(m => CriarLinks(m)).ToList();
-
-            var paginationLinks = new List<LinkMoto>
-            {
-                new LinkMoto { Href = Url.Link("GetMotos", new { pageNumber = 1, pageSize = parameters.PageSize }), Rel = "first", Method = "GET" },
-                new LinkMoto { Href = Url.Link("GetMotos", new { pageNumber = Math.Max(1, parameters.PageNumber - 1), pageSize = parameters.PageSize }), Rel = "prev", Method = "GET" },
-                new LinkMoto { Href = Url.Link("GetMotos", new { pageNumber = Math.Min(totalPages, parameters.PageNumber + 1), pageSize = parameters.PageSize }), Rel = "next", Method = "GET" },
-                new LinkMoto { Href = Url.Link("GetMotos", new { pageNumber = totalPages, pageSize = parameters.PageSize }), Rel = "last", Method = "GET" }
-            };
-
-            return Ok(new { Data = hateoas, Pagination = paginationLinks });
+            
+          
+            return Ok(hateoas); 
         }
 
         /// <summary>
         /// Retorna uma moto pelo ID.
         /// </summary>
+        /// <param name="id">ID da moto.</param>
+        /// <response code="200">Retorna a moto com links HATEOAS.</response>
+        /// <response code="404">Moto não encontrada.</response>
         [HttpGet("{id}", Name = "GetMotoById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -67,14 +63,25 @@ namespace Sprint_1.Controllers
         /// <summary>
         /// Cria uma nova moto.
         /// </summary>
+        /// <param name="dto">Dados da moto a ser criada.</param>
+        /// <response code="201">Moto criada com sucesso.</response>
+        /// <response code="400">Dados inválidos (erros detalhados pelo ModelState).</response>
         [HttpPost(Name = "CreateMoto")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MotoHateoasDto>> Criar(MotoCreateDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Placa) || string.IsNullOrWhiteSpace(dto.Cor))
-                return BadRequest("Cor e Placa são obrigatórios.");
+            if (string.IsNullOrWhiteSpace(dto.Placa))
+                ModelState.AddModelError(nameof(dto.Placa), "O campo Placa é obrigatório.");
 
+            if (string.IsNullOrWhiteSpace(dto.Cor))
+                ModelState.AddModelError(nameof(dto.Cor), "O campo Cor é obrigatório.");
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); 
+            }
+            
             var entity = new Moto
             {
                 Cor = dto.Cor,
@@ -89,6 +96,10 @@ namespace Sprint_1.Controllers
         /// <summary>
         /// Atualiza uma moto existente.
         /// </summary>
+        /// <param name="id">ID da moto.</param>
+        /// <param name="dto">Novos dados da moto.</param>
+        /// <response code="200">Moto atualizada e retornada.</response>
+        /// <response code="404">Moto não encontrada.</response>
         [HttpPut("{id}", Name = "UpdateMoto")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -103,12 +114,15 @@ namespace Sprint_1.Controllers
 
             var updated = await _service.UpdateAsync(id, entity);
             if (updated == null) return NotFound();
-            return Ok(CriarLinks(updated));
+            return Ok(CriarLinks(updated)); 
         }
 
         /// <summary>
         /// Deleta uma moto pelo ID.
         /// </summary>
+        /// <param name="id">ID da moto.</param>
+        /// <response code="204">Moto deletada com sucesso (sem conteúdo de retorno).</response>
+        /// <response code="404">Moto não encontrada.</response>
         [HttpDelete("{id}", Name = "DeleteMoto")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -116,7 +130,7 @@ namespace Sprint_1.Controllers
         {
             var removed = await _service.DeleteAsync(id);
             if (!removed) return NotFound();
-            return NoContent();
+            return NoContent(); 
         }
 
         private MotoHateoasDto CriarLinks(Moto moto)

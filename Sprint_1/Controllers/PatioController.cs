@@ -62,11 +62,22 @@ namespace Sprint_1.Controllers
         /// Cria um novo pátio.
         /// </summary>
         /// <param name="dto">Dados do pátio a ser criado</param>
-        /// <returns>Pátio criado</returns>
+        /// <response code="201">Pátio criado com sucesso.</response>
+        /// <response code="400">Dados inválidos (erros detalhados pelo ModelState).</response> 
         [HttpPost(Name = "CreatePatio")]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)] 
         public async Task<ActionResult<PatioHateoasDto>> Criar(PatioCreateDto dto)
         {
+            // ✅ Adicionar validação de campo obrigatório e usar ModelState
+            if (string.IsNullOrWhiteSpace(dto.Localizacao))
+                ModelState.AddModelError(nameof(dto.Localizacao), "A Localização é obrigatória para criar um pátio.");
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // Retorna 400 Problem Details padronizado
+            }
+    
             var entity = new Patio
             {
                 Localizacao = dto.Localizacao
@@ -81,12 +92,23 @@ namespace Sprint_1.Controllers
         /// </summary>
         /// <param name="id">ID do pátio</param>
         /// <param name="dto">Novos dados do pátio</param>
-        /// <returns>Pátio atualizado</returns>
+        /// <response code="200">Pátio atualizado.</response>
+        /// <response code="400">Dados inválidos.</response> 
+        /// <response code="404">Pátio não encontrado.</response>
         [HttpPut("{id}", Name = "UpdatePatio")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)] 
         public async Task<ActionResult<PatioHateoasDto>> Atualizar(long id, PatioUpdateDto dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.Localizacao))
+                ModelState.AddModelError(nameof(dto.Localizacao), "A Localização é obrigatória para atualizar um pátio.");
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); 
+            }
+    
             var entity = new Patio
             {
                 Localizacao = dto.Localizacao
