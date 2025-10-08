@@ -1,0 +1,150 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace Sprint.Migrations
+{
+    /// <inheritdoc />
+    public partial class Inicial : Migration
+    {
+        private const string TipoNumber = "NUMBER(19)";
+        private const string TipoTexto = "NVARCHAR2(2000)";
+        private const string TipoData = "TIMESTAMP(7)";
+
+        private const string OracleIdentity = "Oracle:Identity";
+        private const string OracleIdentityConfig = "START WITH 1 INCREMENT BY 1";
+
+        // Corrigido para maiúsculo
+        private const string TabelaMotos = "MOTOS";
+        private const string TabelaPatio = "PATIOS";
+        private const string TabelaChaveiro = "CHAVEIROS";
+        private const string TabelaFuncionario = "FUNCIONARIOS";
+        private const string TabelaMotoPatio = "MOTOS_PATIOS";
+
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: TabelaMotos,
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: TipoNumber, nullable: false)
+                        .Annotation(OracleIdentity, OracleIdentityConfig),
+                    Cor = table.Column<string>(type: TipoTexto, nullable: false),
+                    Placa = table.Column<string>(type: TipoTexto, nullable: false),
+                    DataFabricacao = table.Column<DateTime>(type: TipoData, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey($"PK_{TabelaMotos}", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: TabelaPatio,
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: TipoNumber, nullable: false)
+                        .Annotation(OracleIdentity, OracleIdentityConfig),
+                    Localizacao = table.Column<string>(type: TipoTexto, nullable: false) 
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey($"PK_{TabelaPatio}", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: TabelaChaveiro,
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: TipoNumber, nullable: false)
+                        .Annotation(OracleIdentity, OracleIdentityConfig),
+                    Dispositivo = table.Column<string>(type: TipoTexto, nullable: false),
+                    MotoId = table.Column<long>(type: TipoNumber, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey($"PK_{TabelaChaveiro}", x => x.Id);
+                    table.ForeignKey(
+                        name: $"FK_{TabelaChaveiro}_{TabelaMotos}_MotoId",
+                        column: x => x.MotoId,
+                        principalTable: TabelaMotos,
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: TabelaFuncionario,
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: TipoNumber, nullable: false)
+                        .Annotation(OracleIdentity, OracleIdentityConfig),
+                    NOME = table.Column<string>(type: TipoTexto, nullable: false),
+                    CPF = table.Column<string>(type: TipoTexto, nullable: false),
+                    EMAIL = table.Column<string>(type: TipoTexto, nullable: false),
+                    RG = table.Column<string>(type: TipoTexto, nullable: false),
+                    TELEFONE = table.Column<string>(type: TipoTexto, nullable: false),
+                    PatioId = table.Column<long>(type: TipoNumber, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey($"PK_{TabelaFuncionario}", x => x.Id);
+                    table.ForeignKey(
+                        name: $"FK_{TabelaFuncionario}_{TabelaPatio}_PatioId",
+                        column: x => x.PatioId,
+                        principalTable: TabelaPatio,
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: TabelaMotoPatio,
+                columns: table => new
+                {
+                    MotosId = table.Column<long>(type: TipoNumber, nullable: false),
+                    PatiosId = table.Column<long>(type: TipoNumber, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey($"PK_{TabelaMotoPatio}", x => new { x.MotosId, x.PatiosId });
+                    table.ForeignKey(
+                        name: $"FK_{TabelaMotoPatio}_{TabelaMotos}_MotosId",
+                        column: x => x.MotosId,
+                        principalTable: TabelaMotos,
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: $"FK_{TabelaMotoPatio}_{TabelaPatio}_PatiosId",
+                        column: x => x.PatiosId,
+                        principalTable: TabelaPatio,
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: $"IX_{TabelaChaveiro}_MotoId",
+                table: TabelaChaveiro,
+                column: "MotoId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: $"IX_{TabelaFuncionario}_PatioId",
+                table: TabelaFuncionario,
+                column: "PatioId");
+
+            migrationBuilder.CreateIndex(
+                name: $"IX_{TabelaMotoPatio}_PatiosId",
+                table: TabelaMotoPatio,
+                column: "PatiosId");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(name: TabelaChaveiro);
+            migrationBuilder.DropTable(name: TabelaFuncionario);
+            migrationBuilder.DropTable(name: TabelaMotoPatio);
+            migrationBuilder.DropTable(name: TabelaMotos);
+            migrationBuilder.DropTable(name: TabelaPatio);
+        }
+    }
+}
