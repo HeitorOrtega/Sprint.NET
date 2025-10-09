@@ -2,74 +2,108 @@ using Microsoft.EntityFrameworkCore;
 using Sprint.Data;
 using Oracle.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Oracle.ManagedDataAccess.Client;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1️⃣ Conexão com o banco de dados Oracle
+// URL da aplicação
+builder.WebHost.UseUrls("http://localhost:5051");
+
+//Conexão com o banco de dados Oracle
 var connString = builder.Configuration.GetConnectionString("OracleConnection");
 if (string.IsNullOrEmpty(connString))
 {
     throw new InvalidOperationException("A string de conexão 'OracleConnection' não foi encontrada.");
 }
 
-// 2️⃣ Registrar o DbContext
+//Health Checks
+builder.Services.AddHealthChecks()
+    .AddCheck("OracleDb", () =>
+    {
+        try
+        {
+            using var connection = new OracleConnection(connString);
+            connection.Open();
+            return HealthCheckResult.Healthy("Conexão com Oracle OK");
+        }
+        catch (Exception ex)
+        {
+            return HealthCheckResult.Unhealthy("Falha ao conectar com Oracle", ex);
+        }
+    });
+
+//Registrar DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseOracle(connString));
 
-// 3️⃣ Registrar serviços
+//Registrar serviços
 builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
 builder.Services.AddScoped<IMotoService, MotoService>();
 builder.Services.AddScoped<IPatioService, PatioService>();
 
-// 4️⃣ Adicionar Controllers e Swagger
+//Adicionar Controllers
 builder.Services.AddControllers();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+//Versionamento da API
+builder.Services.AddApiVersioning(options =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "API MotoBlu - Sprint 4",
-        Version = "v1",
-        Description = "API RESTful desenvolvida em ASP.NET Core, com integração ao Oracle Database. Segue boas práticas de design HTTP (status codes, verbos e estrutura de resposta) e arquitetura em camadas (Controller, Service, Repository).",
-        Contact = new OpenApiContact
-        {
-            Name = "Equipe MotoBlu",
-            Email = "contato@motoblu.com.br",
-            Url = new Uri("https://github.com/MotoBlu")
-        },
-        License = new OpenApiLicense
-        {
-            Name = "Uso acadêmico - FIAP"
-        }
-    });
-
-    // Inclui comentários XML se existirem (gera descrições automáticas dos endpoints)
-    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    if (File.Exists(xmlPath))
-    {
-        c.IncludeXmlComments(xmlPath);
-    }
+    options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
 });
 
-// 5️⃣ Build da aplicação
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+
+//Swagger
+builder.Services.AddSwaggerGen();
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+
 var app = builder.Build();
 
-// 6️⃣ Middleware e Swagger
-if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+//Swagger e documentação por versão
+var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    foreach (var description in provider.ApiVersionDescriptions)
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API MotoBlu v1");
-        c.DocumentTitle = "MotoBlu - API Documentation";
-    });
-}
+        c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+    }
+    c.DocumentTitle = "MotoBlu - API Documentation";
+});
 
-// 7️⃣ HTTPS e rotas
+//Middleware e rotas
 app.UseHttpsRedirection();
 app.MapControllers();
 
-// 8️⃣ Rodar aplicação
+// Health Check com JSON detalhado
+app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(e => new {
+                name = e.Key,
+                status = e.Value.Status.ToString(),
+                description = e.Value.Description
+            }),
+            totalDuration = report.TotalDuration.TotalMilliseconds
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
+
+//Rodar aplicação
 await app.RunAsync();
