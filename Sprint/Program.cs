@@ -7,20 +7,24 @@ using Oracle.ManagedDataAccess.Client;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Sprint.Controllers;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // URL da aplicação
 builder.WebHost.UseUrls("http://localhost:5051");
 
-//Conexão com o banco de dados Oracle
+// Conexão com o banco de dados Oracle
 var connString = builder.Configuration.GetConnectionString("OracleConnection");
 if (string.IsNullOrEmpty(connString))
 {
     throw new InvalidOperationException("A string de conexão 'OracleConnection' não foi encontrada.");
 }
 
-//Health Checks
+// Health Checks
 builder.Services.AddHealthChecks()
     .AddCheck("OracleDb", () =>
     {
@@ -36,26 +40,28 @@ builder.Services.AddHealthChecks()
         }
     });
 
-//Registrar DbContext
+// Registrar DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseOracle(connString));
 
-//Registrar serviços
+// Registrar serviços
 builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
 builder.Services.AddScoped<IMotoService, MotoService>();
 builder.Services.AddScoped<IPatioService, PatioService>();
 
-//Adicionar Controllers
+// Adicionar Controllers
 builder.Services.AddControllers();
 
-//Versionamento da API
+// Versionamento da API
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
     options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
+    options.Conventions.Controller<FuncionarioControllerV2>().HasApiVersion(new ApiVersion(2, 0)); 
 });
+
 
 builder.Services.AddVersionedApiExplorer(options =>
 {
@@ -63,14 +69,17 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
-//Swagger
-builder.Services.AddSwaggerGen();
-builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+// Swagger
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
 var app = builder.Build();
 
-//Swagger e documentação por versão
+// Swagger e documentação por versão
 var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+foreach (var description in provider.ApiVersionDescriptions)
+{
+    Console.WriteLine($"Registered API version: {description.GroupName} (ApiVersion: {description.ApiVersion})");
+}
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -81,7 +90,7 @@ app.UseSwaggerUI(c =>
     c.DocumentTitle = "MotoBlu - API Documentation";
 });
 
-//Middleware e rotas
+// Middleware e rotas
 app.UseHttpsRedirection();
 app.MapControllers();
 
@@ -105,5 +114,5 @@ app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks
     }
 });
 
-//Rodar aplicação
+// Rodar aplicação
 await app.RunAsync();
