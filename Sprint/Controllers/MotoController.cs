@@ -7,7 +7,8 @@ using Sprint.Models;
 namespace Sprint.Controllers
 {
     [ApiController]
-    [Route("v1/motos")]
+    [ApiVersion("1.0")]
+    [Route("v1/[controller]")]
     public class MotoController : ControllerBase
     {
         private readonly IMotoService _service;

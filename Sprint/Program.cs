@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Sprint.Data;
 using Oracle.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Oracle.ManagedDataAccess.Client;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -9,9 +8,9 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Sprint.Controllers;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
+// ---------- builder ----------
 var builder = WebApplication.CreateBuilder(args);
 
 // URL da aplicação
@@ -59,30 +58,67 @@ builder.Services.AddApiVersioning(options =>
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
     options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
-    options.Conventions.Controller<FuncionarioControllerV2>().HasApiVersion(new ApiVersion(2, 0)); 
 });
 
-
+// Versioned API Explorer
 builder.Services.AddVersionedApiExplorer(options =>
 {
-    options.GroupNameFormat = "'v'VVV";
+    options.GroupNameFormat = "'v'VVV"; // Formato 'v1', 'v2'
     options.SubstituteApiVersionInUrl = true;
 });
 
-// Swagger
+// --- SWAGGER ---
+builder.Services.AddSwaggerGen(options =>
+{
+    options.OperationFilter<SwaggerDefaultValues>(); // Filtro de Operação
+
+    // DocInclusionPredicate (FILTRO CORRIGIDO)
+    options.DocInclusionPredicate((docName, apiDesc) =>
+    {
+        if (!apiDesc.TryGetMethodInfo(out var methodInfo)) return false;
+
+        // Procura atributos de ApiVersion no controller e métodos
+        var versions = methodInfo.DeclaringType?
+            .GetCustomAttributes(true)
+            .OfType<ApiVersionAttribute>()
+            .SelectMany(a => a.Versions)
+            .Select(v => $"v{v.ToString("VVV")}") // CORREÇÃO: Usa o formato 'v1', 'v2' para o filtro
+            .ToList() ?? new List<string>();
+
+        // Também checa atributos no método
+        var methodVersions = methodInfo
+            .GetCustomAttributes(true)
+            .OfType<MapToApiVersionAttribute>()
+            .SelectMany(a => a.Versions)
+            .Select(v => $"v{v.ToString("VVV")}"); // CORREÇÃO: Usa o formato 'v1', 'v2' para o filtro
+
+        if (methodVersions.Any()) versions.AddRange(methodVersions);
+
+        return versions.Contains(docName);
+    });
+});
+
+// Configura geração por versão via IConfigureOptions (Classe ConfigureSwaggerOptions)
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
+// Registrar o filtro de operações
+builder.Services.AddTransient<SwaggerDefaultValues>();
+
+// ---------- build ----------
 var app = builder.Build();
 
-// Swagger e documentação por versão
+// Exibe as versões registradas no console (útil para debugging)
 var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 foreach (var description in provider.ApiVersionDescriptions)
 {
     Console.WriteLine($"Registered API version: {description.GroupName} (ApiVersion: {description.ApiVersion})");
 }
+
+// Middleware Swagger (UI + JSON)
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
+    // Registra um endpoint de swagger.json por versão detectada
     foreach (var description in provider.ApiVersionDescriptions)
     {
         c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());

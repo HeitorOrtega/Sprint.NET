@@ -20,5 +20,6 @@
         public string Localizacao { get; set; }
 
         public List<LinkPatio> Links { get; set; } = new List<LinkPatio>();
+        public string Versao { get; set; }
     }
 }

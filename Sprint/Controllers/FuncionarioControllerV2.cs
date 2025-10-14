@@ -8,7 +8,7 @@ namespace Sprint.Controllers
 {
     [ApiController]
     [ApiVersion("2.0")]
-    [Route("api/v{version:apiVersion}/funcionarios")]
+    [Route("v{version:apiVersion}/[controller]")]
     public class FuncionarioControllerV2 : ControllerBase
     {
         private readonly IFuncionarioService _service;

@@ -18,6 +18,7 @@ namespace Sprint.DTOs
         public DateTime DataFabricacao { get; set; }
 
         public List<LinkMoto> Links { get; set; } = new();
+        public string? Versao { get; set; }  
     }
     /// <summary>
     /// Representa um link HATEOAS.

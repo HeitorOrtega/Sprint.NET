@@ -45,7 +45,7 @@
         /// Versão da API
         /// </summary>
         /// <example>2.0</example>
-        public string? Versao { get; set; }  // Novo campo para v2
+        public string? Versao { get; set; }  
 
         public List<LinkFuncionario> Links { get; set; } = new List<LinkFuncionario>();
     }
