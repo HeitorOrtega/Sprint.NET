@@ -8,7 +8,7 @@ namespace Sprint.Controllers
 {
     [ApiController]
     [ApiVersion("2.0")]
-    [Route("v{version:apiVersion}/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class FuncionarioControllerV2 : ControllerBase
     {
         private readonly IFuncionarioService _service;
@@ -19,6 +19,7 @@ namespace Sprint.Controllers
         }
 
         [HttpGet(Name = "GetFuncionariosV2")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(typeof(ApiResponse<FuncionarioHateoasDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse<IEnumerable<FuncionarioHateoasDto>>>> GetTodos([FromQuery] QueryParameters parameters)
         {
@@ -28,7 +29,7 @@ namespace Sprint.Controllers
             var hateoas = items.Select(f =>
             {
                 var dto = CriarLinks(f);
-                dto.Versao = "2.0"; // Campo extra da versão
+                dto.Versao = "2.0"; 
                 return dto;
             }).ToList();
 
@@ -50,6 +51,7 @@ namespace Sprint.Controllers
         }
 
         [HttpGet("{id}", Name = "GetFuncionarioByIdV2")]
+        [MapToApiVersion("2.0")] 
         [ProducesResponseType(typeof(ApiResponse<FuncionarioHateoasDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<FuncionarioHateoasDto>), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ApiResponse<FuncionarioHateoasDto>>> GetPorId(long id)
@@ -82,8 +84,8 @@ namespace Sprint.Controllers
                 PatioId = f.PatioId
             };
 
-            dto.Links.Add(new LinkFuncionario { Href = Url.Link("GetFuncionarioByIdV2", new { id = f.Id }), Rel = "self", Method = "GET" });
-            dto.Links.Add(new LinkFuncionario { Href = Url.Link("GetFuncionariosV2", null), Rel = "all", Method = "GET" });
+            dto.Links.Add(new LinkFuncionario { Href = Url.Link("GetFuncionarioByIdV2", new { version = "2.0", id = f.Id }), Rel = "self", Method = "GET" });
+            dto.Links.Add(new LinkFuncionario { Href = Url.Link("GetFuncionariosV2", new { version = "2.0" }), Rel = "all", Method = "GET" });
 
             return dto;
         }

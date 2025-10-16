@@ -8,7 +8,7 @@ namespace Sprint.Controllers
 {
     [ApiController]
     [ApiVersion("2.0")]
-    [Route("v{version:apiVersion}/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class PatioControllerV2 : ControllerBase
     {
         private readonly IPatioService _service;
@@ -19,6 +19,7 @@ namespace Sprint.Controllers
         }
 
         [HttpGet(Name = "GetPatiosV2")]
+        [MapToApiVersion("2.0")] 
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<PatioHateoasDto>>), StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse<IEnumerable<PatioHateoasDto>>>> GetTodos([FromQuery] QueryParameters parameters)
         {
@@ -50,6 +51,7 @@ namespace Sprint.Controllers
         }
 
         [HttpGet("{id}", Name = "GetPatioByIdV2")]
+        [MapToApiVersion("2.0")] 
         [ProducesResponseType(typeof(ApiResponse<PatioHateoasDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<PatioHateoasDto>), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ApiResponse<PatioHateoasDto>>> GetPorId(long id)
@@ -77,8 +79,8 @@ namespace Sprint.Controllers
                 Localizacao = patio.Localizacao
             };
 
-            dto.Links.Add(new LinkPatio { Href = Url.Link("GetPatioByIdV2", new { id = patio.Id }), Rel = "self", Method = "GET" });
-            dto.Links.Add(new LinkPatio { Href = Url.Link("GetPatiosV2", null), Rel = "all", Method = "GET" });
+            dto.Links.Add(new LinkPatio { Href = Url.Link("GetPatioByIdV2", new { version = "2.0", id = patio.Id }), Rel = "self", Method = "GET" });
+            dto.Links.Add(new LinkPatio { Href = Url.Link("GetPatiosV2", new { version = "2.0" }), Rel = "all", Method = "GET" });
 
             return dto;
         }

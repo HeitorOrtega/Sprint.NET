@@ -3,30 +3,49 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-/// <summary>
-/// Configura o Swagger para suportar versionamento de API.
-/// </summary>
-public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
+
+namespace Sprint.Helpers
 {
-    private readonly IApiVersionDescriptionProvider _provider;
-
-    public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
+   
+    public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
-        _provider = provider;
-    }
+        private readonly IApiVersionDescriptionProvider _provider;
 
-    public void Configure(SwaggerGenOptions options)
-    {
-        foreach (var description in _provider.ApiVersionDescriptions)
+        public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
         {
-            options.SwaggerDoc(description.GroupName, new OpenApiInfo
-            {
-                Title = $"API MotoBlu {description.ApiVersion}",
-                Version = description.ApiVersion.ToString(),
-                Description = "API RESTful com boas práticas REST, integração Oracle e suporte a HATEOAS.",
-            });
+            _provider = provider;
         }
 
-        options.OperationFilter<SwaggerDefaultValues>();
+        public void Configure(SwaggerGenOptions options)
+        {
+     
+            foreach (var description in _provider.ApiVersionDescriptions)
+            {
+                options.SwaggerDoc(
+                    description.GroupName,
+                    CreateInfoForApiVersion(description));
+            }
+        }
+
+        private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
+        {
+            var info = new OpenApiInfo()
+            {
+                Title = "MotoBlu - Sprint API",
+                Version = description.ApiVersion.ToString(),
+                Description = "Documentação da API do projeto Sprint MotoBlu."
+            };
+
+            if (description.IsDeprecated)
+            {
+                info.Description += " Esta versão da API está obsoleta.";
+            }
+
+            return info;
+        }
     }
 }
