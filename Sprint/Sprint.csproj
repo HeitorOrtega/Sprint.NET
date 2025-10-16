@@ -21,6 +21,8 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="10.0.0-rc.1.25451.107" />
+        <PackageReference Include="Microsoft.ML" Version="4.0.2" />
+        <PackageReference Include="Microsoft.ML.FastTree" Version="4.0.2" />
         <PackageReference Include="Oracle.EntityFrameworkCore" Version="9.23.80" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.5" />
         <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="9.0.0" />
