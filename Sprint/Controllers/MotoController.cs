@@ -8,7 +8,7 @@ namespace Sprint.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("v1/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class MotoController : ControllerBase
     {
         private readonly IMotoService _service;
