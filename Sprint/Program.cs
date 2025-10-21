@@ -54,7 +54,6 @@ builder.Services.AddApiVersioning(options =>
     options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
-    //options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
 });
 
 builder.Services.AddVersionedApiExplorer(options =>
@@ -136,3 +135,4 @@ app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks
 });
 
 await app.RunAsync();
+public partial class Program { }

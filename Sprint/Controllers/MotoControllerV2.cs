@@ -19,7 +19,7 @@ namespace Sprint.Controllers
         }
 
         [HttpGet(Name = "GetMotosV2")]
-        [MapToApiVersion("2.0")] // 🚨 Adicionado para mapear o método à V2
+        [MapToApiVersion("2.0")] 
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<MotoHateoasDto>>), StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse<IEnumerable<MotoHateoasDto>>>> GetTodos([FromQuery] QueryParameters parameters)
         {
@@ -51,7 +51,7 @@ namespace Sprint.Controllers
         }
 
         [HttpGet("{id}", Name = "GetMotoByIdV2")]
-        [MapToApiVersion("2.0")] // 🚨 Adicionado para mapear o método à V2
+        [MapToApiVersion("2.0")] 
         [ProducesResponseType(typeof(ApiResponse<MotoHateoasDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<MotoHateoasDto>), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ApiResponse<MotoHateoasDto>>> GetPorId(long id)
@@ -81,7 +81,6 @@ namespace Sprint.Controllers
                 DataFabricacao = moto.DataFabricacao
             };
 
-            // 🚨 CORREÇÃO HATEOAS: Incluindo "version = 2.0" nos links
             dto.Links.Add(new LinkMoto { Href = Url.Link("GetMotoByIdV2", new { version = "2.0", id = moto.Id }), Rel = "self", Method = "GET" });
             dto.Links.Add(new LinkMoto { Href = Url.Link("GetMotosV2", new { version = "2.0" }), Rel = "all", Method = "GET" });
 
