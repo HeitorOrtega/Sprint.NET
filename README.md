@@ -1,208 +1,334 @@
-# Sprint 1 - .NET API
+# MotoBlu API
 
-API desenvolvida em ASP.NET Core para gerenciamento de motocicletas, funcionários e pátios.
-Parte do projeto acadêmico para a Mottu.
-
----
-
-# 💡 Sobre o Projeto
-
-- Este projeto é uma API RESTful em ASP.NET Core desenvolvida para gerenciar motos, funcionários e pátios de uma empresa de entregas.
-
-- Organiza a frota de motocicletas.
-
-- Controla a alocação em pátios.
-
-- Cadastra e gerencia funcionários.
-
-- Conecta-se a um banco de dados Oracle, permitindo operações completas de CRUD para cada entidade.
+A **MotoBlu API** é uma aplicação desenvolvida em **.NET 9 (ASP.NET Core Web API)** com integração ao banco de dados **Oracle**.  
+O projeto tem como objetivo fornecer um sistema completo para o gerenciamento de motocicletas, clientes e serviços, adotando boas práticas REST, segurança, versionamento e testes automatizados.
 
 ---
 
-# 🏗️ Justificativa da Arquitetura
+## Etiquetas
 
-ASP.NET Core: escolhida por sua performance, facilidade para criar APIs RESTful e integração nativa com bancos de dados como Oracle.
-
-Separação de entidades (Motos, Funcionários, Pátios): permite modularidade e manutenção mais fácil, cada módulo gerencia seus próprios dados.
-
-Camadas do sistema (Controller → Service → Repository/DAO): garante organização, facilita testes unitários e manutenção futura.
-
-Banco Oracle: utilizado para simular um ambiente corporativo real, integrando operações CRUD de forma confiável.
+[![.NET](https://img.shields.io/badge/.NET-9.0-blue)](https://dotnet.microsoft.com/)
+[![License MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![Oracle DB](https://img.shields.io/badge/Database-Oracle-red)](https://www.oracle.com/database/)
+[![Swagger](https://img.shields.io/badge/Docs-Swagger-green)](https://swagger.io/)
+[![xUnit](https://img.shields.io/badge/Tests-xUnit-orange)](https://xunit.net/)
 
 ---
 
----
+## Demonstração
 
-## 🧭 Diagrama da Arquitetura (C4 Simplificado)
+A API pode ser testada via **Swagger UI**, acessando:
 
-```mermaid
-graph TD
-    subgraph Usuário
-        A[Cliente / Front-end] -->|Requisições HTTP| B[API .NET Core]
-    end
-
-    subgraph API["Camada da API (ASP.NET Core)"]
-        B --> C1[Controllers]
-        C1 --> C2[Services]
-        C2 --> C3[Repositories]
-    end
-
-    subgraph Banco["Banco de Dados Oracle"]
-        D[(Tabelas Oracle)]
-    end
-
-     C3 --> D
-
-    style B fill:#0366d6,stroke:#fff,stroke-width:2px,color:#fff
-    style D fill:#f39c12,stroke:#fff,stroke-width:2px,color:#fff
-    style C1 fill:#2ecc71,stroke:#fff
-    style C2 fill:#27ae60,stroke:#fff
-    style C3 fill:#1e8449,stroke:#fff
-```
----
-
-## ⚙️ Instalação e Execução
-
-### ✅ Pré-requisitos
-
-- [.NET SDK 9.0 ou superior](https://dotnet.microsoft.com/en-us/download)
-- [Oracle SQL Developer](https://www.oracle.com/database/sqldeveloper/)
-- [Oracle Data Access Components (ODAC)](https://www.oracle.com/database/technologies/dotnet-odacdeploy-downloads.html)
-- [Oracle Instant Client](https://www.oracle.com/database/technologies/instant-client/downloads.html)
-- Visual Studio, Rider ou outro editor compatível com .NET
+https://localhost:5051/swagger
 
 ---
 
+## Funcionalidades
 
-# 🚀 Passos para Executar
+- CRUD completo de Clientes, Motos e Serviços
+- Integração com banco de dados Oracle via **Entity Framework Core**
+- Versionamento de API
+- Endpoint de Health Check
+- Segurança via **JWT Authentication**
+- Endpoint com **ML.NET** para previsão de manutenção
+- Testes unitários e de integração com **xUnit**
+- Documentação interativa com **Swagger**
+
+---
+
+## Documentação
+
+A documentação interativa está disponível via **Swagger UI**, contendo:
+- Descrição completa dos endpoints
+- Exemplos de requisições e respostas
+- Modelos de dados e parâmetros
+- Status codes adequados
+
+---
+
+## Instruções de Execução: 
+- Clonar o repositório
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/HeitorOrtega/Sprint1.NET.git
+    git clone https://github.com/HeitorOrtega/Sprint.NET.git
+    cd sprint
+```
 
-# 2. Acesse a pasta do projeto
-cd sprint_1
+---
 
-# 3. Restaure os pacotes e atualize o banco
+## Restaurar dependências
+```bash
 dotnet restore
-dotnet ef database update
-
-# 4. Execute a API
-dotnet run
 ```
 
 ---
 
-# 🔧 Configuração do Banco
-```json
-"ConnectionStrings": {
-  "OracleConnection": "User Id=rm557825;Password=fiap25;Data Source=SEU_DATASOURCE;"
+## Configuração do Banco de Dados/Configure o appsettings.json:
+- Edite o arquivo appsettings.json as credenciais:
+  
+```json  
+    "ConnectionStrings": {
+        "OracleConnection": "User Id=rm557825;Password=fiap25;Data Source=oracle.fiap.com.br:1521/ORCL;"
 }
 ```
 
 ---
 
-# 🔗 Endpoints da API
-
-### 🏍️ Motos
-
-| Método | Rota             | Descrição                     |
-| ------ | ---------------- | ----------------------------- |
-| GET    | `/v1/motos`      | Lista todas as motos          |
-| GET    | `/v1/motos/{id}` | Retorna uma moto específica   |
-| POST   | `/v1/motos`      | Cadastra uma nova moto        |
-| PUT    | `/v1/motos/{id}` | Atualiza os dados de uma moto |
-| DELETE | `/v1/motos/{id}` | Remove uma moto do sistema    |
-
-Exemplo de POST /v1/motos
-```json
- {
-  "cor": "azul",
-  "placa": "123teste",
-  "dataFabricacao": "2025-09-12"
-}
-
-```
-Exemplo de PUT /v1/motos
-```json
- {
-  "cor": "preto",
-  "placa": "ABCD123"
-  "dataFabricacao": "2023-08-12"
-}
-```
-
----
-
-
-### 👷 Funcionários
-
-| Método | Rota                                 | Descrição                                                    |
-| ------ | ------------------------------------ | -------------------------------------------------------------|
-| GET    | `/v1/funcionarios`                   | Lista todos os funcionários                                  |
-| GET    | `/v1/funcionarios/{id}`              | Retorna um funcionário específico                            |
-| GET    | `/v1/funcionarios/busca?nome={nome}` | Busca um funcionário por nome                                |
-| POST   | `/v1/funcionarios`                   | Cadastra um novo funcionário (ID de pátio obrigatório)       |
-| PUT    | `/v1/funcionarios/{id}`              | Atualiza os dados de um funcionário (ID de pátio obrigatório)|
-| DELETE | `/v1/funcionarios/{id}`              | Remove um funcionário do sistema                             |
-
-
-Exemplo de POST /v1/funcionarios
-```json
-{
-  "nome": "Cleber",
-  "cpf": "43873308776",
-  "email": "cleber@gmail.com",
-  "rg": "565009277",
-  "telefone": "11947438811",
-  "patioId": 22
-}
-```
-
----
-
-### 🏢 Pátios
-
-| Método | Rota              | Descrição                     |
-| ------ | ----------------- | ----------------------------- |
-| GET    | `/v1/patios`      | Lista todos os pátios         |
-| GET    | `/v1/patios/{id}` | Retorna um pátio específico   |
-| POST   | `/v1/patios`      | Cadastra um novo pátio        |
-| PUT    | `/v1/patios/{id}` | Atualiza os dados de um pátio |
-| DELETE | `/v1/patios/{id}` | Remove um pátio do sistema    |
-
-Exemplo de POST /v1/patios
-```json
-{
-  "localizacao": "patio norte"
-}
-```
----
-
-## 🌐 Acesso ao Swagger
-
-Após executar a API, acesse:
+## Criação do Banco e Migrations:
 
 ```bash
-http://localhost:5051/swagger
-```
-
-## 🧪 Testes
-Para rodar os testes unitários da API:
-
-```bash
-dotnet test
+    dotnet ef database update
 ```
 
 ---
 
-## 👥 Equipe
+## Execução do Projeto:
 
-Projeto desenvolvido para a disciplina de Análise e Desenvolvimento de Sistemas – FIAP.
+```bash
+    dotnet run
+```
 
-Heitor Ortega Silva – RM 557825
+---
 
-Marcos Lourenço – RM 556496
+## Acesse no navegador:
+    http://localhost:5051/swagger
 
-Pedro Saraiva – RM 555160
+---
 
-⚡ Projeto acadêmico – FIAP | Mottu API Sprint 3
+## Endpoints Principais
+### Funcionário
+| Método | Endpoint                    | Descrição                         | Status Code |
+| ------ | --------------------------- | --------------------------------- | ----------- |
+| GET    | `/api/v1/funcionarios`      | Lista todos os funcionários       | 200         |
+| GET    | `/api/v1/funcionarios/{id}` | Retorna um funcionário por ID     | 200 / 404   |
+| POST   | `/api/v1/funcionarios`      | Cria um novo funcionário          | 201         |
+| PUT    | `/api/v1/funcionarios/{id}` | Atualiza um funcionário existente | 200 / 404   |
+| DELETE | `/api/v1/funcionarios/{id}` | Remove um funcionário             | 204 / 404   |
+
+---
+
+### Moto
+| Método | Endpoint             | Descrição                  | Status Code |
+| ------ | -------------------- | -------------------------- | ----------- |
+| GET    | `/api/v1/motos`      | Lista todas as motos       | 200         |
+| GET    | `/api/v1/motos/{id}` | Retorna uma moto por ID    | 200 / 404   |
+| POST   | `/api/v1/motos`      | Cadastra uma nova moto     | 201         |
+| PUT    | `/api/v1/motos/{id}` | Atualiza dados de uma moto | 200         |
+| DELETE | `/api/v1/motos/{id}` | Remove uma moto            | 204         |
+
+---
+
+### Patio
+| Método | Endpoint              | Descrição                   | Status Code |
+| ------ | --------------------- | --------------------------- | ----------- |
+| GET    | `/api/v1/patios`      | Lista todos os pátios       | 200         |
+| GET    | `/api/v1/patios/{id}` | Retorna um pátio específico | 200 / 404   |
+| POST   | `/api/v1/patios`      | Cadastra um novo pátio      | 201         |
+| PUT    | `/api/v1/patios/{id}` | Atualiza um pátio           | 200         |
+| DELETE | `/api/v1/patios/{id}` | Remove um pátio             | 204         |
+
+---
+
+### Previsão (ML.NET)
+| Método | Endpoint           | Descrição                                                | Status Code |
+| ------ | ------------------ | -------------------------------------------------------- | ----------- |
+| POST   | `/api/v1/previsao` | Retorna uma previsão de manutenção para a moto informada | 200         |
+
+---
+
+### Health Check
+| Método | Endpoint           | Descrição                                                | Status Code |
+| ------ | ------------------ | -------------------------------------------------------- | ----------- |
+| POST   | `/api/v1/previsao` | Retorna uma previsão de manutenção para a moto informada | 200         |
+
+---
+
+## Versionamento da API
+
+- A API utiliza versionamento via URL:
+
+#### v1: CRUD e endpoints principais e integração com ML.NET
+
+#### v2: Recursos adicionais e melhorias 
+
+---
+
+## Segurança
+
+- A autenticação é baseada em API KEY:
+    ```bash
+     "ApiKeySettings": {
+      "Key": "12345-API-KEY-MOTOBLU"
+    }
+    ```
+    
+---
+
+## Testes:
+- Execute os testes unitários e de integração:
+```bash
+    dotnet test
+```
+
+## Chagelog do meu projeto da Mottu
+
+### Sprint 1 e Sprint 2
+
+- Criação inicial do projeto MotoBlu API em .NET 8 (Web API)
+
+- Estrutura base da solução com integração ao Oracle Database via EF Core
+
+- Implementação dos primeiros endpoints CRUD
+
+- Configuração do Swagger/OpenAPI para documentação
+
+- Refinamento do CRUD e inclusão de status codes adequados (200, 201, 204, 400, 404)
+
+- Parametrização das rotas com QueryParams e PathParams
+
+- Configuração do README.md inicial com instruções básicas
+
+- Organização do repositório GitHub e documentação
+
+### Sprint 3
+
+- Definição das entidades principais (Funcionário, Moto, Pátio)
+
+- Reestruturação da arquitetura com camadas Controller, Service e Repository
+
+- Implementação de HATEOAS e paginação nos endpoints
+
+- Melhoria da documentação Swagger com exemplos e modelos de dados
+
+- Adição de instruções de execução e comandos de teste no README
+
+### Sprint 4
+
+- Implementação do versionamento da API (v1/v2)
+
+- Criação do endpoint de Health Check
+
+- Adição da autenticação JWT
+
+- Implementação de endpoint de previsão com ML.NET
+
+- Desenvolvimento de testes unitários e de integração (xUnit + WebApplicationFactory)
+
+Inclusão de diagramas de arquitetura e ERD no README
+
+Revisão final seguindo boas práticas REST e HTTP
+
+---
+
+# Diagramas 
+
+## Diagrama da Arquitetura 
+```mermaid
+flowchart TD
+    A[Frontend / Swagger UI] --> B[Controllers - API REST]
+    B --> C[Services - Lógica de Negócio]
+    C --> D[Repository / DbContext - EF Core]
+    D --> E[(Banco de Dados SQL Server)]
+    C --> F[ML.NET - Previsão de Preço de Moto]
+
+    style A fill:#7dd3fc,stroke:#0369a1,stroke-width:2px,color:#000
+    style B fill:#a5f3fc,stroke:#0e7490,stroke-width:2px,color:#000
+    style C fill:#bef264,stroke:#4d7c0f,stroke-width:2px,color:#000
+    style D fill:#fcd34d,stroke:#b45309,stroke-width:2px,color:#000
+    style E fill:#fda4af,stroke:#9f1239,stroke-width:2px,color:#000
+    style F fill:#c4b5fd,stroke:#6d28d9,stroke-width:2px,color:#000
+
+
+```
+---
+
+#### Explicação da Arquitetura
+
+- Controller Layer: Define endpoints HTTP e valida parâmetros.
+
+- Service Layer: Regras de negócio e orquestração entre entidades.
+
+- Repository Layer: Manipulação de dados via Entity Framework Core.
+
+- ML.NET Prediction Engine: Processa os dados de motos para prever manutenções.
+
+- Oracle Database: Armazena todas as entidades persistentes.
+
+- JWT Authentication: Garante a segurança das rotas protegidas.
+
+- Swagger: Interface gráfica da documentação da API.
+  
+---
+
+## Diagrama Entidade-Relacionamento (ERD)
+```mermaid
+
+erDiagram
+    PATIO {
+        long Id PK
+        string Localizacao
+    }
+
+    FUNCIONARIO {
+        long Id PK
+        string Nome
+        string Cpf
+        string Email
+        string Rg
+        string Telefone
+        long PatioId FK
+    }
+
+    MOTO {
+        long Id PK
+        string Cor
+        string Placa
+        datetime DataFabricacao
+    }
+
+    CHAVEIRO {
+        long Id PK
+        string Dispositivo
+        long MotoId FK
+    }
+
+    PREVISAO {
+        long Id PK
+        string Modelo
+        int Ano
+        string DescricaoProblema
+        double MediaValores
+        string SolucaoSugerida
+        long MotoId FK
+    }
+
+    PATIO ||--o{ FUNCIONARIO : "possui"
+    PATIO ||--o{ MOTO : "abriga"
+    MOTO ||--|| CHAVEIRO : "possui um"
+    MOTO ||--o{ PREVISAO : "gera previsões"
+
+```
+#### Explicação da Arquitetura
+
+- Pátio: Entidade central que representa o local físico onde motos e funcionários estão vinculados.
+
+- Funcionário: Associado a um pátio específico. Cada funcionário pode gerenciar várias motos.
+
+- Moto: Pode estar associada a um ou mais pátios e possui um chaveiro (1:1).
+
+- Chaveiro: Dispositivo de segurança vinculado a uma única moto.
+
+- Previsão (ML.NET): Entidade auxiliar usada para prever falhas ou manutenções com base nos dados de entrada (modelo, ano, descrição do problema etc.).
+
+
+👥 Autores
+
+Equipe MotoBlu
+
+Heitor Ortega Silva - 557825
+
+Pedro Cardoso Saraiva - 555160
+
+Marcos Lourenço - 556496
+
+Curso: Análise e Desenvolvimento de Sistemas - FIAP
+
