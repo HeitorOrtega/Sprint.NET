@@ -1,6 +1,8 @@
 ﻿using Microsoft.ML;
 using Sprint.DTOs.ML;
 using System.Collections.Generic;
+using Microsoft.ML.Data; 
+using Microsoft.ML.Trainers.FastTree;
 
 namespace Sprint.Services
 {
@@ -24,10 +26,22 @@ namespace Sprint.Services
             var data = GetSampleData();
             var trainingData = mlContext.Data.LoadFromEnumerable(data);
             
+            var fastTreeOptions = new FastTreeRegressionTrainer.Options
+            {
+                LabelColumnName = "Label",
+                FeatureColumnName = "Features",
+                NumberOfTrees = 100,             
+                NumberOfLeaves = 50,             
+                MinimumExampleCountPerLeaf = 1   
+            };
+
             var pipeline = mlContext.Transforms.Categorical.OneHotEncoding(outputColumnName: "CorEncoded", inputColumnName: nameof(MotoPriceInput.Cor))
+        
+                .Append(mlContext.Transforms.NormalizeMinMax(outputColumnName: nameof(MotoPriceInput.DiasUso), inputColumnName: nameof(MotoPriceInput.DiasUso)))
+        
                 .Append(mlContext.Transforms.Concatenate("Features", "CorEncoded", nameof(MotoPriceInput.DiasUso)))
-               
-                .Append(mlContext.Regression.Trainers.Sdca(labelColumnName: "Label", featureColumnName: "Features"));
+       
+                .Append(mlContext.Regression.Trainers.FastTree(fastTreeOptions));
 
             return pipeline.Fit(trainingData);
         }
@@ -54,7 +68,14 @@ namespace Sprint.Services
 
         public MotoPricePrediction PredictPrice(MotoPriceInput input)
         {
-            return _predictionEngine.Predict(input);
+            var prediction = _predictionEngine.Predict(input);
+            
+            if (prediction.PrecoPrevisto < 5000f) 
+            {
+                prediction.PrecoPrevisto = 5000f;
+            }
+            
+            return prediction;
         }
     }
 }
