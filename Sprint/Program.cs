@@ -109,6 +109,31 @@ app.UseSwaggerUI(c =>
     c.DocumentTitle = "MotoBlu - API Documentation";
 });
 
+using (var scope = app.Services.CreateScope())
+{
+    var service = scope.ServiceProvider.GetRequiredService<IFuncionarioService>() as FuncionarioService;
+
+    if (service != null)
+    {
+        Console.WriteLine("\n=======================================================");
+        Console.WriteLine("INÍCIO DA DEMONSTRAÇÃO DE INTEGRAÇÃO C# ↔ ORACLE PL/SQL");
+        Console.WriteLine("=======================================================");
+        
+        Console.WriteLine("\n--- 1. TESTE DE SUCESSO ---");
+        Console.WriteLine(await service.MoverFuncionarioParaPatioAsync("11122233344", 2));
+    
+        Console.WriteLine("\n--- 2. TESTE DE ERRO: CPF INEXISTENTE ---");
+        Console.WriteLine(await service.MoverFuncionarioParaPatioAsync("99999999999", 2));
+    
+        Console.WriteLine("\n--- 3. TESTE DE ERRO: PÁTIO INVÁLIDO ---");
+        Console.WriteLine(await service.MoverFuncionarioParaPatioAsync("11122233344", 9999));
+        
+        Console.WriteLine("\n=======================================================");
+        Console.WriteLine("FIM DA DEMONSTRAÇÃO. O SERVIDOR WEB SERÁ INICIADO AGORA.");
+        Console.WriteLine("=======================================================\n");
+    }
+}
+
 app.UseHttpsRedirection();
 
 app.UseMiddleware<Sprint.Middleware.ApiKeyMiddleware>();
