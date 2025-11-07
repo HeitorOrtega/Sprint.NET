@@ -165,11 +165,12 @@ dotnet restore
 
 ## Testes:
 - Execute os testes unitários e de integração:
+- Pare de executar o projeto para executar os tests:
 ```bash
     dotnet test
 ```
 
-## Chagelog do meu projeto da Mottu
+## Changelog do meu projeto da Mottu
 
 ### Sprint 1 e Sprint 2
 
