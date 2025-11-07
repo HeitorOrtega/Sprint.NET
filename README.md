@@ -138,7 +138,7 @@ dotnet restore
 ### Health Check
 | Método | Endpoint           | Descrição                                                | Status Code |
 | ------ | ------------------ | -------------------------------------------------------- | ----------- |
-| POST   | `/api/v1/previsao` | Retorna uma previsão de manutenção para a moto informada | 200         |
+| POST   | `http://localhost:5051/health` | Retorna uma previsão de manutenção para a moto informada | 200         |
 
 ---
 
